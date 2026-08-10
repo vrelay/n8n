@@ -655,8 +655,12 @@ defineExpose({
 									/>
 								</N8nSelect>
 							</div>
-							<div v-if="props.uiConfig.showFiltersDropdown" :class="$style['sort-and-filter']">
+							<div
+								v-if="props.uiConfig.showFiltersDropdown || $slots['add-button']"
+								:class="$style['sort-and-filter']"
+							>
 								<ResourceFiltersDropdown
+									v-if="props.uiConfig.showFiltersDropdown"
 									:keys="filterKeys"
 									:reset="resetFilters"
 									:model-value="filtersModel"

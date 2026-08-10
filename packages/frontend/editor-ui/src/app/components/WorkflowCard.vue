@@ -32,7 +32,8 @@ import {
 } from '@/features/collaboration/projects/projects.types';
 import type { PathItem } from '@n8n/design-system/components/N8nBreadcrumbs/Breadcrumbs.vue';
 import { useFoldersStore } from '@/features/core/folders/folders.store';
-import { useFavoritesStore } from '@/app/stores/favorites.store';
+// LMS: Favorite action removed from card menu
+// import { useFavoritesStore } from '@/app/stores/favorites.store';
 
 import {
 	N8nActionToggle,
@@ -127,7 +128,8 @@ const workflowsStore = useWorkflowsStore();
 const workflowsListStore = useWorkflowsListStore();
 const projectsStore = useProjectsStore();
 const foldersStore = useFoldersStore();
-const favoritesStore = useFavoritesStore();
+// LMS: Favorite action removed from card menu
+// const favoritesStore = useFavoritesStore();
 const mcpStore = useMCPStore();
 const mcp = useMcp();
 const workflowActivate = useWorkflowActivate();
@@ -191,19 +193,20 @@ const actions = computed(() => {
 		},
 	];
 
-	if (workflowPermissions.value.share) {
-		items.push({
-			label: locale.baseText('workflows.item.share'),
-			value: WORKFLOW_LIST_ITEM_ACTIONS.SHARE,
-		});
-	}
+	// LMS: hide Share + Favorite from the card ⋮ menu
+	// if (workflowPermissions.value.share) {
+	// 	items.push({
+	// 		label: locale.baseText('workflows.item.share'),
+	// 		value: WORKFLOW_LIST_ITEM_ACTIONS.SHARE,
+	// 	});
+	// }
 
-	items.push({
-		label: favoritesStore.isFavorite(props.data.id, 'workflow')
-			? locale.baseText('favorites.remove')
-			: locale.baseText('favorites.add'),
-		value: WORKFLOW_LIST_ITEM_ACTIONS.TOGGLE_FAVORITE,
-	});
+	// items.push({
+	// 	label: favoritesStore.isFavorite(props.data.id, 'workflow')
+	// 		? locale.baseText('favorites.remove')
+	// 		: locale.baseText('favorites.add'),
+	// 	value: WORKFLOW_LIST_ITEM_ACTIONS.TOGGLE_FAVORITE,
+	// });
 
 	if (
 		workflowPermissions.value.read &&
@@ -408,9 +411,10 @@ async function onAction(action: string) {
 		case WORKFLOW_LIST_ITEM_ACTIONS.REMOVE_MCP_ACCESS:
 			await toggleMCPAccess(false);
 			break;
-		case WORKFLOW_LIST_ITEM_ACTIONS.TOGGLE_FAVORITE:
-			await favoritesStore.toggleFavorite(props.data.id, 'workflow');
-			break;
+		// LMS: Favorite action removed from card menu
+		// case WORKFLOW_LIST_ITEM_ACTIONS.TOGGLE_FAVORITE:
+		// 	await favoritesStore.toggleFavorite(props.data.id, 'workflow');
+		// 	break;
 	}
 }
 

@@ -14,7 +14,8 @@ import ResourcesListLayout from '@/app/components/layouts/ResourcesListLayout.vu
 // LMS: ProjectHeader (tabs / overview / insights) hidden on workflows page
 // import ProjectHeader from '@/features/collaboration/projects/components/ProjectHeader.vue';
 import WorkflowCard from '@/app/components/WorkflowCard.vue';
-import WorkflowTagsDropdown from '@/features/shared/tags/components/WorkflowTagsDropdown.vue';
+// LMS: unused while tags filter is commented out
+// import WorkflowTagsDropdown from '@/features/shared/tags/components/WorkflowTagsDropdown.vue';
 import { useAutoScrollOnDrag } from '@/app/composables/useAutoScrollOnDrag';
 import { getDebounceTime, useDebounce } from '@n8n/composables/useDebounce';
 import { useDocumentTitle } from '@/app/composables/useDocumentTitle';
@@ -102,19 +103,20 @@ import { type LocationQueryRaw, useRoute, useRouter } from 'vue-router';
 
 import {
 	N8nEmptyState,
-	// LMS: unused while header/callouts commented out
-	// N8nButton,
+	// LMS: used by archived toggle on workflows list
+	N8nButton,
 	// N8nCallout,
 	N8nCard,
-	N8nCheckbox,
+	// LMS: unused while stock filters panel is commented out
+	// N8nCheckbox,
 	// N8nIcon,
 	N8nInfoTip,
 	// N8nInlineTextEdit,
-	N8nInputLabel,
+	// N8nInputLabel,
 	N8nLink,
 	// N8nLoading,
-	N8nOption,
-	N8nSelect,
+	// N8nOption,
+	// N8nSelect,
 	N8nText,
 	// N8nTooltip,
 } from '@n8n/design-system';
@@ -297,9 +299,10 @@ const mainBreadcrumbsActions = computed(
 		),
 );
 
-const isShareable = computed(
-	() => settingsStore.isEnterpriseFeatureEnabled[EnterpriseEditionFeature.Sharing],
-);
+// LMS: shareable owner filter disabled on this page (`:shareable="false"`)
+// const isShareable = computed(
+// 	() => settingsStore.isEnterpriseFeatureEnabled[EnterpriseEditionFeature.Sharing],
+// );
 
 const foldersEnabled = computed(() => {
 	return settingsStore.isFoldersFeatureEnabled;
@@ -548,20 +551,21 @@ const workflowListResources = computed<Resource[]>(() => {
 	return resources;
 });
 
-const statusFilterOptions = computed(() => [
-	{
-		label: i18n.baseText('workflows.filters.status.all'),
-		value: StatusFilter.ALL,
-	},
-	{
-		label: i18n.baseText('workflows.filters.status.active'),
-		value: StatusFilter.ACTIVE,
-	},
-	{
-		label: i18n.baseText('workflows.filters.status.deactivated'),
-		value: StatusFilter.DEACTIVATED,
-	},
-]);
+// LMS: status filter UI commented out — keep for easy restore
+// const statusFilterOptions = computed(() => [
+// 	{
+// 		label: i18n.baseText('workflows.filters.status.all'),
+// 		value: StatusFilter.ALL,
+// 	},
+// 	{
+// 		label: i18n.baseText('workflows.filters.status.active'),
+// 		value: StatusFilter.ACTIVE,
+// 	},
+// 	{
+// 		label: i18n.baseText('workflows.filters.status.deactivated'),
+// 		value: StatusFilter.DEACTIVATED,
+// 	},
+// ]);
 
 const showReadyToRunWorkflowsCallout = computed(() => {
 	const isEnabled = readyToRunWorkflowsStore.isFeatureEnabled;
@@ -1245,6 +1249,18 @@ const dismissStarterCollectionCallout = () => {
 const onShowArchived = async () => {
 	filters.value.showArchived = true;
 	await onFiltersUpdated();
+};
+
+/** LMS: funnel control toggles archived visibility (replaces tags/status filter panel). */
+const toggleShowArchived = async () => {
+	filters.value.showArchived = !filters.value.showArchived;
+	await onFiltersUpdated();
+};
+
+const workflowsListUiConfig = {
+	searchEnabled: true,
+	sortEnabled: true,
+	showFiltersDropdown: false,
 };
 
 const handleDismissReadyToRunCallout = () => {
@@ -2203,7 +2219,7 @@ const onNameSubmit = async (name: string) => {
 		type="list-paginated"
 		:resources="workflowListResources"
 		:type-props="{ itemSize: 80 }"
-		:shareable="isShareable"
+		:shareable="false"
 		:initialize="initialize"
 		:disabled="readOnlyEnv || !projectPermissions.workflow.create"
 		:loading="false"
@@ -2212,6 +2228,7 @@ const onNameSubmit = async (name: string) => {
 		:total-items="workflowsListStore.totalWorkflowCount"
 		:dont-perform-sorting-and-filtering="true"
 		:has-empty-state="foldersStore.totalWorkflowCount === 0 && !currentFolderId"
+		:ui-config="workflowsListUiConfig"
 		@click:add="addWorkflow"
 		@update:search="onSearchUpdated"
 		@update:filters="onFiltersUpdated"
@@ -2488,6 +2505,21 @@ const onNameSubmit = async (name: string) => {
 				-->
 			</div>
 		</template>
+		<!-- LMS: hide stock filters dropdown (tags/status/owner). Funnel toggles archived instead. -->
+		<template #add-button>
+			<N8nButton
+				variant="outline"
+				icon="funnel"
+				size="medium"
+				iconOnly
+				:active="filters.showArchived"
+				:aria-label="i18n.baseText('workflows.filters.showArchived')"
+				data-test-id="show-archived-toggle"
+				@click="toggleShowArchived"
+			/>
+		</template>
+		<!-- LMS: stock filters panel unused — archived is toggled via #add-button above -->
+		<!--
 		<template #filters="{ setKeyValue }">
 			<div v-if="settingsStore.areTagsEnabled" class="mb-s">
 				<N8nInputLabel
@@ -2536,6 +2568,7 @@ const onNameSubmit = async (name: string) => {
 				/>
 			</div>
 		</template>
+		-->
 		<template #postamble>
 			<!-- Empty states for shared section and folders -->
 			<div
