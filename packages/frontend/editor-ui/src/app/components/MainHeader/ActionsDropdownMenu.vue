@@ -112,6 +112,16 @@ function handleFileImport() {
 }
 
 const workflowMenuItems = computed<Array<ActionDropdownItem<WORKFLOW_MENU_ACTIONS>>>(() => {
+	// LMS: only keep "Import from file..." — original menu builder commented below
+	return [
+		{
+			id: WORKFLOW_MENU_ACTIONS.IMPORT_FROM_FILE,
+			label: locale.baseText('menuActions.importFromFile'),
+			disabled: onExecutionsTab.value || collaborationReadOnly.value || props.isArchived,
+		},
+	];
+
+	/*
 	const actions: Array<ActionDropdownItem<WORKFLOW_MENU_ACTIONS>> = [
 		{
 			id: WORKFLOW_MENU_ACTIONS.DOWNLOAD,
@@ -234,6 +244,7 @@ const workflowMenuItems = computed<Array<ActionDropdownItem<WORKFLOW_MENU_ACTION
 	}
 
 	return actions;
+	*/
 });
 
 async function onWorkflowMenuSelect(action: WORKFLOW_MENU_ACTIONS): Promise<void> {

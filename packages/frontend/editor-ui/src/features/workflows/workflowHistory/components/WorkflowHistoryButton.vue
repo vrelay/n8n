@@ -5,7 +5,7 @@ import { AutoSaveState, VIEWS } from '@/app/constants';
 import { useI18n } from '@n8n/i18n';
 import { useUIStore } from '@/app/stores/ui.store';
 import { useWorkflowSaveStore } from '@/app/stores/workflowSave.store';
-import { N8nIconButton, N8nTooltip } from '@n8n/design-system';
+import { N8nIconButton, N8nButton, N8nTooltip } from '@n8n/design-system';
 import { useDebounce } from '@n8n/composables/useDebounce';
 import { LOADING_ANIMATION_MIN_DURATION } from '@/app/constants/durations';
 
@@ -52,6 +52,9 @@ const isScheduled = computed(() => saveStore.autoSaveState === AutoSaveState.Sch
 const isDisabled = computed(
 	() => props.isNewWorkflow || isScheduled.value || isWorkflowSaving.value,
 );
+
+// LMS: child-friendly label instead of history icon
+const changeLogLabel = 'Change log';
 </script>
 
 <template>
@@ -60,6 +63,18 @@ const isDisabled = computed(
 			:is="isDisabled ? 'div' : RouterLink"
 			:to="isDisabled ? undefined : workflowHistoryRoute"
 		>
+			<!-- LMS: text label instead of history icon -->
+			<N8nButton
+				class="n8n-button--highlight"
+				variant="ghost"
+				size="medium"
+				:disabled="isDisabled"
+				:loading="isWorkflowSaving"
+				data-test-id="workflow-history-button"
+				:label="changeLogLabel"
+				:aria-label="changeLogLabel"
+			/>
+			<!--
 			<N8nIconButton
 				class="n8n-button--highlight"
 				variant="ghost"
@@ -70,6 +85,7 @@ const isDisabled = computed(
 				:aria-label="locale.baseText('workflowHistory.title')"
 				size="medium"
 			/>
+			-->
 		</component>
 		<template #content>
 			<span v-if="isNewWorkflow">
@@ -81,7 +97,9 @@ const isDisabled = computed(
 			<span v-else-if="isWorkflowSaving">
 				{{ locale.baseText('workflowHistory.button.tooltip.saving') }}
 			</span>
-			<span v-else>{{ locale.baseText('workflowHistory.button.tooltip') }}</span>
+			<!-- LMS: short label in tooltip when ready -->
+			<span v-else>{{ changeLogLabel }}</span>
+			<!-- <span v-else>{{ locale.baseText('workflowHistory.button.tooltip') }}</span> -->
 		</template>
 	</N8nTooltip>
 </template>

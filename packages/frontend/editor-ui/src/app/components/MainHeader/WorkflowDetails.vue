@@ -1,10 +1,13 @@
 <script lang="ts" setup>
 import BreakpointsObserver from '@/app/components/BreakpointsObserver.vue';
-import FolderBreadcrumbs from '@/features/core/folders/components/FolderBreadcrumbs.vue';
+// LMS: Personal / folder breadcrumbs hidden in template
+// import FolderBreadcrumbs from '@/features/core/folders/components/FolderBreadcrumbs.vue';
 import ConnectionTracker from '@/app/components/ConnectionTracker.vue';
-import WorkflowProductionChecklist from '@/app/components/WorkflowProductionChecklist.vue';
-import WorkflowTagsContainer from '@/features/shared/tags/components/WorkflowTagsContainer.vue';
-import WorkflowTagsDropdown from '@/features/shared/tags/components/WorkflowTagsDropdown.vue';
+// LMS: production checklist (0 / 1) hidden in template
+// import WorkflowProductionChecklist from '@/app/components/WorkflowProductionChecklist.vue';
+// LMS: tags UI hidden in template
+// import WorkflowTagsContainer from '@/features/shared/tags/components/WorkflowTagsContainer.vue';
+// import WorkflowTagsDropdown from '@/features/shared/tags/components/WorkflowTagsDropdown.vue';
 import { MAX_WORKFLOW_NAME_LENGTH, MODAL_CONFIRM, VIEWS } from '@/app/constants';
 
 import { useProjectsStore } from '@/features/collaboration/projects/projects.store';
@@ -36,7 +39,9 @@ import {
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-import { N8nBadge, N8nInlineTextEdit } from '@n8n/design-system';
+import { N8nInlineTextEdit } from '@n8n/design-system';
+// LMS: archived badge hidden with tags block
+// import { N8nBadge, N8nInlineTextEdit } from '@n8n/design-system';
 import { useSettingsStore } from '@/app/stores/settings.store';
 import { useUIStore } from '@/app/stores/ui.store';
 import { useWorkflowsStore } from '@/app/stores/workflows.store';
@@ -424,6 +429,7 @@ onBeforeUnmount(() => {
 
 <template>
 	<div :class="$style.container">
+		<!-- LMS: title edit only (Personal / folder breadcrumbs hidden) -->
 		<BreakpointsObserver
 			:value-x-s="15"
 			:value-s-m="25"
@@ -432,78 +438,27 @@ onBeforeUnmount(() => {
 			data-test-id="canvas-breadcrumbs"
 		>
 			<template #default="{ bp }">
-				<FolderBreadcrumbs
-					:current-folder="currentFolderForBreadcrumbs"
-					:current-folder-as-link="true"
-					@item-selected="onBreadcrumbsItemSelected"
-				>
-					<template #append>
-						<span
-							v-if="projectsStore.currentProject ?? projectsStore.personalProject"
-							:class="$style['path-separator']"
-							>/</span
-						>
-						<N8nInlineTextEdit
-							ref="renameInput"
-							:key="id"
-							placeholder="Workflow name"
-							data-test-id="workflow-name-input"
-							class="name"
-							:model-value="name"
-							:max-length="MAX_WORKFLOW_NAME_LENGTH"
-							:max-width="WORKFLOW_NAME_BP_TO_WIDTH[bp]"
-							:read-only="readOnlyActions"
-							:disabled="readOnlyActions"
-							@update:model-value="onNameSubmit"
-						/>
-					</template>
-				</FolderBreadcrumbs>
+				<N8nInlineTextEdit
+					ref="renameInput"
+					:key="id"
+					placeholder="Workflow name"
+					data-test-id="workflow-name-input"
+					class="name"
+					:model-value="name"
+					:max-length="MAX_WORKFLOW_NAME_LENGTH"
+					:max-width="WORKFLOW_NAME_BP_TO_WIDTH[bp]"
+					:read-only="readOnlyActions"
+					:disabled="readOnlyActions"
+					@update:model-value="onNameSubmit"
+				/>
 			</template>
 		</BreakpointsObserver>
-		<span class="tags" data-test-id="workflow-tags-container">
-			<template v-if="settingsStore.areTagsEnabled">
-				<WorkflowTagsDropdown
-					v-if="isTagsEditEnabled && !readOnlyActions"
-					ref="dropdown"
-					v-model="appliedTagIds"
-					:event-bus="tagsEventBus"
-					:placeholder="i18n.baseText('workflowDetails.chooseOrCreateATag')"
-					class="tags-edit"
-					data-test-id="workflow-tags-dropdown"
-					@blur="onTagsBlur"
-					@esc="onTagsEditEsc"
-				/>
-				<div v-else-if="tags.length === 0 && !readOnlyActions">
-					<span class="add-tag clickable" data-test-id="new-tag-link" @click="onTagsEditEnable">
-						+ {{ i18n.baseText('workflowDetails.addTag') }}
-					</span>
-				</div>
-				<WorkflowTagsContainer
-					v-else
-					:key="id"
-					:tag-ids="workflowTagIds"
-					:clickable="true"
-					:responsive="true"
-					data-test-id="workflow-tags"
-					@click="onTagsEditEnable"
-				/>
-			</template>
-
-			<span :class="$style['header-controls']">
-				<N8nBadge
-					v-if="isArchived"
-					class="ml-3xs"
-					theme="tertiary"
-					bold
-					data-test-id="workflow-archived-tag"
-				>
-					{{ locale.baseText('workflows.item.archived') }}
-				</N8nBadge>
-			</span>
-		</span>
+		<!-- LMS: tags (+ Add tag) hidden — restore WorkflowTags* block from git history if needed -->
+		<span :class="$style.spacer" aria-hidden="true" />
 
 		<ConnectionTracker class="actions">
-			<WorkflowProductionChecklist v-if="!isNewWorkflow" />
+			<!-- LMS: hide production checklist badge (e.g. 0 / 1) -->
+			<!-- <WorkflowProductionChecklist v-if="!isNewWorkflow" /> -->
 			<WorkflowHeaderDraftPublishActions
 				:id="id"
 				ref="workflowHeaderActions"
@@ -605,6 +560,12 @@ $--header-spacing: 20px;
 	display: flex;
 	align-items: center;
 	flex-wrap: nowrap;
+}
+
+/* LMS: replaces tags flex grow so actions stay right-aligned */
+.spacer {
+	flex: 1;
+	min-width: 0;
 }
 
 .path-separator {

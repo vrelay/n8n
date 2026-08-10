@@ -51,10 +51,11 @@ type WorkflowHistoryActionRecord = {
 
 const workflowHistoryActionTypes: WorkflowHistoryActionTypes = [
 	'restore',
-	'publish',
-	'unpublish',
-	'name',
-	'clone',
+	// LMS: hide these from version ⋯ menu — keep open / download / restore only
+	// 'publish',
+	// 'unpublish',
+	// 'name',
+	// 'clone',
 	'open',
 	'download',
 ];
@@ -136,19 +137,22 @@ const actions = computed<Array<UserAction<IUser>>>(() =>
 );
 
 type HistoryTab = 'history' | 'publishTimeline';
-const initialTab: HistoryTab =
-	route.query.tab === WORKFLOW_HISTORY_PUBLISH_TIMELINE_TAB ? 'publishTimeline' : 'history';
-const activeTab = ref<HistoryTab>(initialTab);
+// LMS: always Versions (history) — no Publish Timeline selection
+// const initialTab: HistoryTab =
+// 	route.query.tab === WORKFLOW_HISTORY_PUBLISH_TIMELINE_TAB ? 'publishTimeline' : 'history';
+// const activeTab = ref<HistoryTab>(initialTab);
+const activeTab = ref<HistoryTab>('history');
 
 const tabOptions = computed<Array<TabOptions<HistoryTab>>>(() => [
 	{
 		label: i18n.baseText('workflowHistory.tab.history'),
 		value: 'history',
 	},
-	{
-		label: i18n.baseText('workflowHistory.tab.publishTimeline'),
-		value: 'publishTimeline',
-	},
+	// LMS: Publish Timeline tab hidden
+	// {
+	// 	label: i18n.baseText('workflowHistory.tab.publishTimeline'),
+	// 	value: 'publishTimeline',
+	// },
 ]);
 
 const isFirstItemShown = computed(() => workflowHistory.value[0]?.versionId === versionId.value);
@@ -630,12 +634,18 @@ watchEffect(async () => {
 			</span>
 		</div>
 		<div :class="$style.corner">
+			<!-- LMS: Versions label only — no tab switcher -->
+			<span :class="$style.versionsLabel" data-test-id="workflow-history-tabs">
+				{{ i18n.baseText('workflowHistory.tab.history') }}
+			</span>
+			<!--
 			<N8nTabs
 				v-model="activeTab"
 				:options="tabOptions"
 				size="small"
 				data-test-id="workflow-history-tabs"
 			/>
+			-->
 			<RouterLink
 				:to="editorRoute"
 				:class="$style.closeButton"
@@ -663,12 +673,14 @@ watchEffect(async () => {
 				@load-more="loadMore"
 				@upgrade="onUpgrade"
 			/>
+			<!-- LMS: Publish Timeline panel hidden
 			<WorkflowPublishTimelineContent
 				v-if="canRender && activeTab === 'publishTimeline'"
 				:workflow-id="workflowId"
 				:selected-version-id="versionId"
 				@select-version="onSelectPublishTimelineVersion"
 			/>
+			-->
 		</div>
 		<div :class="$style.contentComponentWrapper">
 			<WorkflowHistoryContent
@@ -745,6 +757,13 @@ watchEffect(async () => {
 		background-color: var(--color--foreground);
 		z-index: 1;
 	}
+}
+
+/* LMS: static Versions label when tabs are commented out */
+.versionsLabel {
+	font-size: var(--font-size--sm);
+	font-weight: var(--font-weight--bold);
+	color: var(--color--text);
 }
 
 .closeButton {

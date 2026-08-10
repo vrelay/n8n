@@ -786,7 +786,12 @@ defineExpose({
 				@retry-publish="onRetryPublishFromBanner"
 			/>
 		</div>
-		<div v-if="!shouldHidePublishButton" :class="$style.publishButtonWrapper">
+		<!-- LMS: hide Publish button + version chevron dropdown; keep history + ⋯ -->
+		<div
+			v-if="false && !shouldHidePublishButton"
+			:class="$style.publishButtonWrapper"
+			data-lms-hidden="publish"
+		>
 			<div :class="$style.buttonGroup">
 				<N8nTooltip
 					:disabled="

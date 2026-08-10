@@ -24,6 +24,8 @@ const i18n = useI18n();
 		<span data-test-id="prune-time-display">
 			{{ props.pruneTimeDisplay }}
 		</span>
+		<!-- LMS: hide "Upgrade plan to activate full history" -->
+		<!--
 		<I18nT keypath="workflowHistory.upgrade" tag="span" scope="global">
 			<template #link>
 				<a href="#" @click.prevent="emit('upgrade')">
@@ -31,7 +33,7 @@ const i18n = useI18n();
 				</a>
 			</template>
 		</I18nT>
-	</div>
+		--></div>
 </template>
 
 <style module lang="scss">

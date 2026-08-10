@@ -62,8 +62,10 @@ const executionRoutes: VIEWS[] = [
 const tabBarItems = computed(() => {
 	return [
 		{ value: MAIN_HEADER_TABS.WORKFLOW, label: locale.baseText('generic.editor') },
-		{ value: MAIN_HEADER_TABS.EXECUTIONS, label: locale.baseText('generic.executions') },
-		{ value: MAIN_HEADER_TABS.EVALUATION, label: locale.baseText('generic.tests') },
+		// LMS: hide Executions tab
+		// { value: MAIN_HEADER_TABS.EXECUTIONS, label: locale.baseText('generic.executions') },
+		// LMS: hide Evaluations tab
+		// { value: MAIN_HEADER_TABS.EVALUATION, label: locale.baseText('generic.tests') },
 	];
 });
 
