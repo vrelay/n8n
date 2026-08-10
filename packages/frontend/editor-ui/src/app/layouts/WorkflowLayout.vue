@@ -6,23 +6,26 @@ import { InstanceAiEditorCapabilityKey } from '@/app/composables/useInstanceAiEd
 import { useWorkflowInitialization } from '@/app/composables/useWorkflowInitialization';
 import { usePostMessageHandler } from '@/app/composables/usePostMessageHandler';
 import { usePushConnectionStore } from '@/app/stores/pushConnection.store';
-import AskAssistantFloatingButton from '@/features/ai/assistant/components/Chat/AskAssistantFloatingButton.vue';
-import CanvasChatOverlay from '@/features/ai/chatHub/components/CanvasChatOverlay.vue';
-import { useAssistantStore } from '@/features/ai/assistant/assistant.store';
-import { useChatHubPanelStore } from '@/features/ai/chatHub/chatHubPanel.store';
+// LMS: AI overlays commented out below — restore these with the overlays template.
+// import AskAssistantFloatingButton from '@/features/ai/assistant/components/Chat/AskAssistantFloatingButton.vue';
+// import CanvasChatOverlay from '@/features/ai/chatHub/components/CanvasChatOverlay.vue';
+// import { useAssistantStore } from '@/features/ai/assistant/assistant.store';
+// import { useChatHubPanelStore } from '@/features/ai/chatHub/chatHubPanel.store';
 import { useInstanceAiHandoffCapability } from '@/features/ai/instanceAi/composables/useInstanceAiHandoffCapability';
 import AppHeader from '@/app/components/app/AppHeader.vue';
-import AppSidebar from '@/app/components/app/AppSidebar.vue';
+// LMS: hide main sidebar on the workflow editor. Uncomment to restore.
+// import AppSidebar from '@/app/components/app/AppSidebar.vue';
 import LogsPanel from '@/features/execution/logs/components/LogsPanel.vue';
 import LoadingView from '@/app/views/LoadingView.vue';
-import { useSettingsStore } from '@/app/stores/settings.store';
+// LMS: only needed when sidebar / overlays use isCanvasOnly
+// import { useSettingsStore } from '@/app/stores/settings.store';
 
 const { layoutProps } = useLayoutProps();
-const assistantStore = useAssistantStore();
-const chatHubPanelStore = useChatHubPanelStore();
+// const assistantStore = useAssistantStore();
+// const chatHubPanelStore = useChatHubPanelStore();
 const pushConnectionStore = usePushConnectionStore();
-const settingsStore = useSettingsStore();
-const isCanvasOnly = settingsStore.isCanvasOnly;
+// const settingsStore = useSettingsStore();
+// const isCanvasOnly = settingsStore.isCanvasOnly;
 
 const {
 	isLoading,
@@ -87,9 +90,12 @@ onBeforeUnmount(() => {
 		<template #header>
 			<AppHeader />
 		</template>
+		<!-- LMS: sidebar disabled — workflow canvas only; uncomment to restore stock chrome -->
+		<!--
 		<template v-if="!isCanvasOnly" #sidebar>
 			<AppSidebar />
 		</template>
+		-->
 		<!-- Gate on a non-null document store, not just isLoading: during a load/switch the
 		provided store is briefly null (disposed before the new one is created), and NodeView's
 		strict injectNDVStore() reads throw if it mounts in that window. Mirrors WorkflowCanvasHostBody's isReady.
@@ -100,9 +106,12 @@ onBeforeUnmount(() => {
 		<template v-if="layoutProps.logs" #footer>
 			<LogsPanel />
 		</template>
+		<!-- LMS: hide AI assistant / chat overlays for now -->
+		<!--
 		<template v-if="!isCanvasOnly" #overlays>
 			<AskAssistantFloatingButton v-if="assistantStore.isFloatingButtonShown" />
 			<CanvasChatOverlay v-if="chatHubPanelStore.isFloatingChatEnabled" />
 		</template>
+		-->
 	</BaseLayout>
 </template>
