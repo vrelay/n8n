@@ -925,12 +925,13 @@ const fetchWorkflows = async () => {
 			void fetchDependencyCounts(workflowIds, 'workflow');
 		}
 
-		// Toggle ownership cards visibility only after we have fetched the workflows
-		showCardsBadge.value =
-			projectPages.isOverviewSubPage ||
-			projectPages.isSharedSubPage ||
-			filters.value.search !== '' ||
-			filters.value.tags.length > 0;
+		// LMS: hide ownership / "Personal" project badge on cards (no tags/owner chrome)
+		showCardsBadge.value = false;
+		// showCardsBadge.value =
+		// 	projectPages.isOverviewSubPage ||
+		// 	projectPages.isSharedSubPage ||
+		// 	filters.value.search !== '' ||
+		// 	filters.value.tags.length > 0;
 
 		return fetchedResources;
 	} catch (error) {
