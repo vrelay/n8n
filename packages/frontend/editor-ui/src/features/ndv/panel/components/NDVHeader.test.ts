@@ -13,12 +13,12 @@ describe('NDVHeader', () => {
 		readOnly: false,
 	};
 
-	it('renders docs label', () => {
-		const { getByText } = renderComponent(NDVHeader, {
+	it('does not render docs label (LMS: Docs link hidden)', () => {
+		const { queryByText } = renderComponent(NDVHeader, {
 			props: defaultProps,
 			pinia: createTestingPinia(),
 		});
-		expect(getByText('Docs')).toBeInTheDocument();
+		expect(queryByText('Docs')).not.toBeInTheDocument();
 	});
 
 	it('emits rename when inline text is changed', async () => {

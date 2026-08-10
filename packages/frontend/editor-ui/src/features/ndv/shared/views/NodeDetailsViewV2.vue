@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import type { IRunDataDisplayMode, IUpdateInformation, TargetItem } from '@/Interface';
-import type { MainPanelType, NodePanelType } from '../ndv.types';
+import type { IRunDataDisplayMode, ITab, IUpdateInformation, TargetItem } from '@/Interface';
+// LMS: MainPanelType unused while 3-column layout / useNdvLayout is commented out
+// import type { MainPanelType, NodePanelType } from '../ndv.types';
+import type { NodePanelType } from '../ndv.types';
 import { createEventBus } from '@n8n/utils/event-bus';
 import type { IRunData, NodeConnectionType } from 'n8n-workflow';
 import { jsonParse, NodeConnectionTypes, NodeHelpers } from 'n8n-workflow';
@@ -16,8 +18,10 @@ import {
 import { useExternalHooks } from '@/app/composables/useExternalHooks';
 import { useKeybindings } from '@/app/composables/useKeybindings';
 import { useMessage } from '@/app/composables/useMessage';
-import { useNdvLayout } from '../../panel/composables/useNdvLayout';
-import { useNodeDocsUrl } from '@/app/composables/useNodeDocsUrl';
+// LMS: 3-column resize unused while NDV uses Input/Config/Output tabs
+// import { useNdvLayout } from '../../panel/composables/useNdvLayout';
+// LMS: docs URL unused while header Docs link is commented out
+// import { useNodeDocsUrl } from '@/app/composables/useNodeDocsUrl';
 import { useNodeHelpers } from '@/app/composables/useNodeHelpers';
 import { usePinnedData } from '@/app/composables/usePinnedData';
 import { useStyles } from '@n8n/composables/useStyles';
@@ -41,13 +45,19 @@ import { useDeviceSupport } from '@n8n/composables/useDeviceSupport';
 import { useI18n } from '@n8n/i18n';
 import InputPanel from '../../panel/components/InputPanel.vue';
 import OutputPanel from '../../panel/components/OutputPanel.vue';
-import PanelDragButtonV2 from '../../panel/components/PanelDragButtonV2.vue';
+// LMS: 3-column resize/drag unused while NDV uses Input/Config/Output tabs
+// import PanelDragButtonV2 from '../../panel/components/PanelDragButtonV2.vue';
 import TriggerPanel from '../../panel/components/TriggerPanel.vue';
 import { useTelemetryContext } from '@/app/composables/useTelemetryContext';
 import { nodeViewEventBus } from '@/app/event-bus';
-import { N8nResizeWrapper } from '@n8n/design-system';
+// LMS: N8nResizeWrapper unused while NDV is tabbed (one panel at a time)
+// import { N8nResizeWrapper } from '@n8n/design-system';
+import { N8nTabs, N8nText } from '@n8n/design-system';
 import NDVFloatingNodes from '@/features/ndv/panel/components/NDVFloatingNodes.vue';
 import { useNodeIconSource } from '@/app/composables/useNodeIconSource';
+
+// LMS: student NDV — one of Input / Config / Output at a time
+type LmsNdvTab = 'input' | 'config' | 'output';
 const emit = defineEmits<{
 	valueChanged: [parameterData: IUpdateInformation];
 	switchSelectedNode: [nodeTypeName: string];
@@ -120,7 +130,25 @@ const activeNodeType = computed(() => {
 	return null;
 });
 
-const { docsUrl } = useNodeDocsUrl({ nodeType: activeNodeType });
+// LMS: docs URL unused while header Docs link is commented out
+// const { docsUrl } = useNodeDocsUrl({ nodeType: activeNodeType });
+
+// LMS: default to Config so kids land on parameters, not three panes at once
+const lmsActiveTab = ref<LmsNdvTab>('config');
+const lmsTabOptions = computed<Array<ITab<LmsNdvTab>>>(() => [
+	{ label: i18n.baseText('ndv.input'), value: 'input' },
+	{ label: 'Config', value: 'config' },
+	{ label: i18n.baseText('ndv.output'), value: 'output' },
+]);
+
+const onLmsTabChange = (tab: LmsNdvTab) => {
+	lmsActiveTab.value = tab;
+	if (tab === 'input') {
+		activateInputPane();
+	} else if (tab === 'output') {
+		activateOutputPane();
+	}
+};
 
 const workflowRunning = computed(() => uiStore.isActionActive.workflowRunning);
 
@@ -327,11 +355,11 @@ const inputPanelDisplayMode = computed(() => ndvStore.value.inputPanelDisplayMod
 
 const outputPanelDisplayMode = computed(() => ndvStore.value.outputPanelDisplayMode);
 
-const hasInputPanel = computed(() => !isTriggerNode.value || showTriggerPanel.value);
-
-const supportedResizeDirections = computed<Array<'left' | 'right'>>(() =>
-	hasInputPanel.value ? ['left', 'right'] : ['right'],
-);
+// LMS: 3-column resize unused while NDV is tabbed — restore with stock layout template
+// const hasInputPanel = computed(() => !isTriggerNode.value || showTriggerPanel.value);
+// const supportedResizeDirections = computed<Array<'left' | 'right'>>(() =>
+// 	hasInputPanel.value ? ['left', 'right'] : ['right'],
+// );
 
 const nodeSettingsProps = computed(() => ({
 	eventBus: settingsEventBus,
@@ -345,13 +373,13 @@ const nodeSettingsProps = computed(() => ({
 	isNdvV2: true,
 }));
 
-const currentNodePaneType = computed((): MainPanelType => {
-	if (!hasInputPanel.value) return 'inputless';
-	return activeNodeType.value?.parameterPane ?? 'regular';
-});
-
-const { containerWidth, onDrag, onResize, onResizeEnd, panelWidthPercentage, panelWidthPixels } =
-	useNdvLayout({ container: containerRef, hasInputPanel, paneType: currentNodePaneType });
+// LMS: layout helpers unused while NDV is tabbed
+// const currentNodePaneType = computed((): MainPanelType => {
+// 	if (!hasInputPanel.value) return 'inputless';
+// 	return activeNodeType.value?.parameterPane ?? 'regular';
+// });
+// const { containerWidth, onDrag, onResize, onResizeEnd, panelWidthPercentage, panelWidthPixels } =
+// 	useNdvLayout({ container: containerRef, hasInputPanel, paneType: currentNodePaneType });
 
 const icon = useNodeIconSource(activeNodeType, activeNode);
 
@@ -409,24 +437,22 @@ const onOutputItemHover = (e: { itemIndex: number; outputIndex: number } | null)
 	ndvStore.value.setHoveringItem(item);
 };
 
-const onDragEnd = () => {
-	onResizeEnd();
-	isDragging.value = false;
-	telemetry.track('User moved parameters pane', {
-		// example method for tracking
-		window_width: containerWidth.value,
-		start_position: mainPanelPosition.value,
-		// TODO:
-		// end_position: mainPanelDimensions.value.relativeLeft,
-		node_type: activeNodeType.value ? activeNodeType.value.name : '',
-		push_ref: pushRef.value,
-		workflow_id: workflowId.value,
-	});
-};
-
-const onDragStart = () => {
-	isDragging.value = true;
-};
+// LMS: drag handlers unused while NDV is tabbed (no PanelDragButton / resize)
+// const onDragEnd = () => {
+// 	onResizeEnd();
+// 	isDragging.value = false;
+// 	telemetry.track('User moved parameters pane', {
+// 		window_width: containerWidth.value,
+// 		start_position: mainPanelPosition.value,
+// 		node_type: activeNodeType.value ? activeNodeType.value.name : '',
+// 		push_ref: pushRef.value,
+// 		workflow_id: workflowId.value,
+// 	});
+// };
+//
+// const onDragStart = () => {
+// 	isDragging.value = true;
+// };
 
 const onLinkRunToOutput = () => {
 	isLinkingEnabled.value = true;
@@ -608,6 +634,7 @@ watch(
 			triggerWaitingWarningEnabled.value = false;
 			avgOutputRowHeight.value = 0;
 			avgInputRowHeight.value = 0;
+			lmsActiveTab.value = 'config'; // LMS: reset to Config when opening / switching nodes
 
 			setTimeout(() => ndvStore.value.setNDVPushRef(), 0);
 
@@ -744,6 +771,7 @@ onBeforeUnmount(() => {
 					[$style.webhookWaiting]: isExecutionWaitingForWebhook,
 				}"
 			>
+				<!-- LMS: docs-url omitted — Docs button commented out in NDVHeader -->
 				<NDVHeader
 					:class="$style.header"
 					:node-name="activeNode.name"
@@ -751,15 +779,22 @@ onBeforeUnmount(() => {
 						activeNodeType?.defaults.name ?? activeNodeType?.displayName ?? activeNode.name
 					"
 					:icon="icon"
-					:docs-url="docsUrl"
 					@close="close"
 					@rename="onRename"
 				/>
+				<!-- LMS: Input / Config / Output — one panel at a time (avoids 3-column overload) -->
+				<div :class="$style.lmsTabs" data-test-id="lms-ndv-tabs">
+					<N8nTabs
+						:options="lmsTabOptions"
+						:model-value="lmsActiveTab"
+						@update:model-value="onLmsTabChange"
+					/>
+				</div>
 				<main :class="$style.main">
+					<!-- LMS: Input tab -->
 					<div
-						v-if="hasInputPanel"
-						:class="[$style.column, $style.dataColumn]"
-						:style="{ width: `${panelWidthPercentage.left}%` }"
+						v-show="lmsActiveTab === 'input'"
+						:class="[$style.column, $style.dataColumn, $style.lmsFullPanel]"
 					>
 						<TriggerPanel
 							v-if="showTriggerPanel"
@@ -796,33 +831,19 @@ onBeforeUnmount(() => {
 							@search="onSearch"
 							@display-mode-change="handleChangeDisplayMode('input', $event)"
 						/>
+						<div v-else :class="$style.lmsEmptyTab">
+							<N8nText color="text-light">
+								No input for this node
+							</N8nText>
+						</div>
 					</div>
 
-					<N8nResizeWrapper
-						:width="panelWidthPixels.main"
-						:min-width="260"
-						:supported-directions="supportedResizeDirections"
-						:grid-size="8"
-						:class="{
-							[$style.column]: !isExecutionWaitingForWebhook,
-							[$style.webhookWaiting]: isExecutionWaitingForWebhook,
-						}"
-						:style="{ width: `${panelWidthPercentage.main}%` }"
-						outset
-						@resize="onResize"
-						@resizestart="onDragStart"
-						@resizeend="onDragEnd"
+					<!-- LMS: Config tab (was middle Parameters column) — stock 3-col + resize commented below -->
+					<div
+						v-show="lmsActiveTab === 'config'"
+						:class="[$style.column, $style.lmsFullPanel]"
 					>
 						<div ref="mainPanelRef" :class="$style.main">
-							<PanelDragButtonV2
-								v-if="hasInputPanel"
-								:class="$style.draggable"
-								:can-move-left="true"
-								:can-move-right="true"
-								@drag="onDrag"
-								@dragstart="onDragStart"
-								@dragend="onDragEnd"
-							/>
 							<NodeSettings
 								v-bind="nodeSettingsProps"
 								:class="$style.settings"
@@ -833,11 +854,12 @@ onBeforeUnmount(() => {
 								@open-connection-node-creator="onOpenConnectionNodeCreator"
 							/>
 						</div>
-					</N8nResizeWrapper>
+					</div>
 
+					<!-- LMS: Output tab -->
 					<div
-						:class="[$style.column, $style.dataColumn]"
-						:style="{ width: `${panelWidthPercentage.right}%` }"
+						v-show="lmsActiveTab === 'output'"
+						:class="[$style.column, $style.dataColumn, $style.lmsFullPanel]"
 					>
 						<OutputPanel
 							data-test-id="output-panel"
@@ -863,6 +885,17 @@ onBeforeUnmount(() => {
 							@display-mode-change="handleChangeDisplayMode('output', $event)"
 						/>
 					</div>
+
+					<!--
+					LMS: stock 3-column layout (Input | Parameters | Output) with resize handles.
+					Restore this block and remove the tabbed panels above to undo.
+					<div v-if="hasInputPanel" ...> TriggerPanel / InputPanel </div>
+					<N8nResizeWrapper ...>
+						<PanelDragButtonV2 ... />
+						<NodeSettings ... />
+					</N8nResizeWrapper>
+					<div ...> OutputPanel </div>
+					-->
 				</main>
 			</div>
 		</dialog>
@@ -936,6 +969,10 @@ onBeforeUnmount(() => {
 .input,
 .output {
 	min-width: 280px;
+	/* LMS: fill the single active tab panel */
+	flex-grow: 1;
+	height: 100%;
+	min-height: 0;
 }
 
 .dataColumn {
@@ -947,6 +984,30 @@ onBeforeUnmount(() => {
 	border-bottom: var(--border);
 	border-top-left-radius: var(--radius--lg);
 	border-top-right-radius: var(--radius--lg);
+}
+
+/* LMS: Input / Config / Output tab bar */
+.lmsTabs {
+	background-color: var(--ndv--background--color);
+	border-bottom: var(--border);
+	padding: var(--spacing--2xs) var(--spacing--sm) 0;
+	flex-shrink: 0;
+}
+
+.lmsFullPanel {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+}
+
+.lmsEmptyTab {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-grow: 1;
+	padding: var(--spacing--xl);
 }
 
 .settings {

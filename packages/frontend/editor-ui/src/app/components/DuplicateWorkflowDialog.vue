@@ -1,10 +1,14 @@
 <script lang="ts" setup>
-import { ref, watch, onMounted, nextTick } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
+// LMS: tags UI removed from duplicate dialog
+// import { ref, watch, onMounted, nextTick } from 'vue';
 import { MAX_WORKFLOW_NAME_LENGTH } from '@/app/constants';
 import { useToast } from '@n8n/composables/useToast';
-import WorkflowTagsDropdown from '@/features/shared/tags/components/WorkflowTagsDropdown.vue';
+// LMS: WorkflowTagsDropdown unused while tag picker is hidden
+// import WorkflowTagsDropdown from '@/features/shared/tags/components/WorkflowTagsDropdown.vue';
 import Modal from '@/app/components/Modal.vue';
-import { useSettingsStore } from '@/app/stores/settings.store';
+// LMS: settingsStore only gated tags dropdown
+// import { useSettingsStore } from '@/app/stores/settings.store';
 import { useWorkflowsStore } from '@/app/stores/workflows.store';
 import { useWorkflowsListStore } from '@/app/stores/workflowsList.store';
 import type { WorkflowDataCreate } from '@n8n/rest-api-client/api/workflows';
@@ -38,22 +42,24 @@ const i18n = useI18n();
 const telemetry = useTelemetry();
 
 const credentialsStore = useCredentialsStore();
-const settingsStore = useSettingsStore();
+// const settingsStore = useSettingsStore();
 const workflowsStore = useWorkflowsStore();
 const workflowsListStore = useWorkflowsListStore();
 
 const name = ref('');
-const currentTagIds = ref(props.data.tags);
+// LMS: no tag picker — duplicate without tags
+// const currentTagIds = ref(props.data.tags);
 const isSaving = ref(false);
-const prevTagIds = ref(currentTagIds.value);
+// const prevTagIds = ref(currentTagIds.value);
 const modalBus = createEventBus();
-const dropdownBus = createEventBus();
+// const dropdownBus = createEventBus();
 
 const nameInputRef = ref<HTMLElement>();
 
-const focusOnSelect = () => {
-	dropdownBus.emit('focus');
-};
+// LMS: focus tags dropdown removed
+// const focusOnSelect = () => {
+// 	dropdownBus.emit('focus');
+// };
 
 const focusOnNameInput = () => {
 	if (nameInputRef.value?.focus) {
@@ -61,13 +67,13 @@ const focusOnNameInput = () => {
 	}
 };
 
-const onTagsBlur = () => {
-	prevTagIds.value = currentTagIds.value;
-};
-
-const onTagsEsc = () => {
-	currentTagIds.value = prevTagIds.value;
-};
+// const onTagsBlur = () => {
+// 	prevTagIds.value = currentTagIds.value;
+// };
+//
+// const onTagsEsc = () => {
+// 	currentTagIds.value = prevTagIds.value;
+// };
 
 const closeDialog = () => {
 	modalBus.emit('close');
@@ -118,7 +124,7 @@ const save = async (): Promise<void> => {
 		const duplicatedWorkflowId = await workflowSaving.saveAsNewWorkflow({
 			name: workflowName,
 			data: workflowToCreate,
-			tags: currentTagIds.value,
+			tags: [], // LMS: no tag selection on duplicate
 			resetWebhookUrls: true,
 			openInNewWindow: true,
 			resetNodeIds: true,
@@ -147,14 +153,15 @@ const save = async (): Promise<void> => {
 	}
 };
 
-watch(
-	() => props.isActive,
-	(active) => {
-		if (active) {
-			focusOnSelect();
-		}
-	},
-);
+// LMS: no longer focus tags when modal opens
+// watch(
+// 	() => props.isActive,
+// 	(active) => {
+// 		if (active) {
+// 			focusOnSelect();
+// 		}
+// 	},
+// );
 
 onMounted(async () => {
 	name.value = await workflowsStore.getDuplicateCurrentWorkflowName(props.data.name);
@@ -180,6 +187,8 @@ onMounted(async () => {
 					:placeholder="i18n.baseText('duplicateWorkflowDialog.enterWorkflowName')"
 					:maxlength="MAX_WORKFLOW_NAME_LENGTH"
 				/>
+				<!-- LMS: hide tag picker on duplicate -->
+				<!--
 				<WorkflowTagsDropdown
 					v-if="settingsStore.areTagsEnabled"
 					ref="dropdown"
@@ -190,6 +199,7 @@ onMounted(async () => {
 					@blur="onTagsBlur"
 					@esc="onTagsEsc"
 				/>
+				-->
 			</div>
 		</template>
 		<template #footer="{ close }">

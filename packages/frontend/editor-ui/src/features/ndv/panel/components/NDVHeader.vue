@@ -5,11 +5,12 @@ import { useI18n } from '@n8n/i18n';
 import { computed } from 'vue';
 
 import {
-	N8nIcon,
+	// LMS: docs link commented out — restore with N8nLink block below
+	// N8nIcon,
 	N8nIconButton,
 	N8nInlineTextEdit,
-	N8nLink,
-	N8nText,
+	// N8nLink,
+	// N8nText,
 	N8nTooltip,
 } from '@n8n/design-system';
 const props = defineProps<{
@@ -58,6 +59,7 @@ function onRename(newNodeName: string) {
 		</div>
 
 		<div :class="$style.actions">
+			<!-- LMS: hide Docs link — restore N8nLink + imports above if needed
 			<N8nLink v-if="docsUrl" theme="text" target="_blank" :href="docsUrl">
 				<span :class="$style.docsLabel">
 					<N8nText size="small" bold>
@@ -66,6 +68,7 @@ function onRename(newNodeName: string) {
 					<N8nIcon icon="external-link" />
 				</span>
 			</N8nLink>
+			-->
 			<N8nTooltip>
 				<template #content>
 					{{ i18n.baseText('ndv.close.tooltip') }}

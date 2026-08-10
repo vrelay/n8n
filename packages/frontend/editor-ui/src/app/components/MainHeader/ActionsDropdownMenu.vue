@@ -112,8 +112,22 @@ function handleFileImport() {
 }
 
 const workflowMenuItems = computed<Array<ActionDropdownItem<WORKFLOW_MENU_ACTIONS>>>(() => {
-	// LMS: only keep "Import from file..." — original menu builder commented below
-	return [
+	// LMS: student workflow ⋯ — edit description, duplicate, download, import file, archive/delete
+	const actions: Array<ActionDropdownItem<WORKFLOW_MENU_ACTIONS>> = [
+		{
+			id: WORKFLOW_MENU_ACTIONS.EDIT_DESCRIPTION,
+			label: locale.baseText('menuActions.editDescription'),
+			disabled: !props.id,
+		},
+		{
+			id: WORKFLOW_MENU_ACTIONS.DUPLICATE,
+			label: locale.baseText('menuActions.duplicate'),
+			disabled: !props.id,
+		},
+		{
+			id: WORKFLOW_MENU_ACTIONS.DOWNLOAD,
+			label: locale.baseText('menuActions.download'),
+		},
 		{
 			id: WORKFLOW_MENU_ACTIONS.IMPORT_FROM_FILE,
 			label: locale.baseText('menuActions.importFromFile'),
@@ -121,7 +135,40 @@ const workflowMenuItems = computed<Array<ActionDropdownItem<WORKFLOW_MENU_ACTION
 		},
 	];
 
+	if (
+		(props.workflowPermissions.delete === true &&
+			!collaborationReadOnly.value &&
+			!sourceControlStore.preferences.branchReadOnly) ||
+		props.isNewWorkflow
+	) {
+		if (props.isArchived) {
+			actions.push({
+				id: WORKFLOW_MENU_ACTIONS.UNARCHIVE,
+				label: locale.baseText('menuActions.unarchive'),
+				disabled: props.isNewWorkflow,
+			});
+			actions.push({
+				id: WORKFLOW_MENU_ACTIONS.DELETE,
+				label: locale.baseText('menuActions.delete'),
+				disabled: props.isNewWorkflow,
+				customClass: $style.deleteItem,
+				divided: true,
+			});
+		} else {
+			actions.push({
+				id: WORKFLOW_MENU_ACTIONS.ARCHIVE,
+				label: locale.baseText('menuActions.archive'),
+				disabled: props.isNewWorkflow,
+				customClass: $style.deleteItem,
+				divided: true,
+			});
+		}
+	}
+
+	return actions;
+
 	/*
+	// LMS: stock menu builder (Share / Change owner / Rename / Favorite / Import URL / Push / Settings …)
 	const actions: Array<ActionDropdownItem<WORKFLOW_MENU_ACTIONS>> = [
 		{
 			id: WORKFLOW_MENU_ACTIONS.DOWNLOAD,
