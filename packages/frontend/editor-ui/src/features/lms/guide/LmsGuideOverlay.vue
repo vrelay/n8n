@@ -30,6 +30,20 @@ const { start, finish, goToStep } = useVOnboarding(wrapper);
 
 const stepCount = computed(() => guide.value?.steps.length ?? 0);
 
+// LMS: students must keep interacting with the canvas (click +, drag connections) while
+// guided — v-onboarding's default preventOverlayInteraction sets body pointer-events:none
+// and only frees the highlighted element, which dead-ends the lesson. Keep the dim
+// overlay purely visual instead.
+const wrapperOptions = {
+	overlay: {
+		enabled: true,
+		padding: 8,
+		borderRadius: 8,
+		preventOverlayInteraction: false,
+	},
+	scrollToStep: { enabled: false },
+};
+
 watch(
 	[active, () => guide.value?.id],
 	([isActive]) => {
@@ -85,7 +99,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-	<VOnboardingWrapper v-if="active" ref="wrapper" :steps="vOnboardingSteps">
+	<VOnboardingWrapper v-if="active" ref="wrapper" :steps="vOnboardingSteps" :options="wrapperOptions">
 		<template #default="{ step, next, previous, isFirst, isLast }">
 			<VOnboardingStep>
 				<div :class="$style.card">
