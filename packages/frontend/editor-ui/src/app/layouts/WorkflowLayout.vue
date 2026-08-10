@@ -17,6 +17,8 @@ import AppHeader from '@/app/components/app/AppHeader.vue';
 // import AppSidebar from '@/app/components/app/AppSidebar.vue';
 import LogsPanel from '@/features/execution/logs/components/LogsPanel.vue';
 import LoadingView from '@/app/views/LoadingView.vue';
+// LMS: build-along lesson guide overlay (v-onboarding); started via ⋯ → Import lesson guide
+import LmsGuideOverlay from '@/features/lms/guide/LmsGuideOverlay.vue';
 // LMS: only needed when sidebar / overlays use isCanvasOnly
 // import { useSettingsStore } from '@/app/stores/settings.store';
 
@@ -105,6 +107,10 @@ onBeforeUnmount(() => {
 		<RouterView v-else />
 		<template v-if="layoutProps.logs" #footer>
 			<LogsPanel />
+		</template>
+		<!-- LMS: build-along lesson guide overlay -->
+		<template #overlays>
+			<LmsGuideOverlay />
 		</template>
 		<!-- LMS: hide AI assistant / chat overlays for now -->
 		<!--

@@ -40,6 +40,9 @@ import { useFavoritesStore } from '@/app/stores/favorites.store';
 import { ResourceType } from '@/features/collaboration/projects/projects.utils';
 import { useMoveResourceToProjectToast } from '@/features/collaboration/projects/composables/useMoveResourceToProjectToast';
 import { injectWorkflowDocumentStore } from '@/app/stores/workflowDocument.store';
+// LMS: lesson guide import
+import { useLmsGuideStore } from '@/features/lms/guide/lmsGuide.store';
+import { parseLmsGuide } from '@/features/lms/guide/parseGuide';
 
 const props = defineProps<{
 	workflowPermissions: PermissionsRecord['workflow'];
@@ -52,6 +55,8 @@ const props = defineProps<{
 }>();
 
 const importFileRef = ref<HTMLInputElement | undefined>();
+// LMS: separate input for lesson guide JSON so it never touches workflow import
+const importGuideFileRef = ref<HTMLInputElement | undefined>();
 const toast = useToast();
 const locale = useI18n();
 const route = useRoute();
@@ -70,6 +75,27 @@ const { showMoveToProjectToast } = useMoveResourceToProjectToast();
 const workflowTelemetry = useTelemetry();
 const favoritesStore = useFavoritesStore();
 const workflowDocumentStore = injectWorkflowDocumentStore();
+const lmsGuideStore = useLmsGuideStore();
+
+// LMS: parse a lesson guide JSON and start the build-along tour; never replaces the workflow
+function handleGuideFileImport() {
+	const inputRef = importGuideFileRef.value;
+	if (!inputRef?.files || inputRef.files.length === 0) return;
+
+	const reader = new FileReader();
+	reader.onload = () => {
+		try {
+			lmsGuideStore.start(parseLmsGuide(reader.result as string));
+			toast.showMessage({ title: locale.baseText('generic.guideStarted'), type: 'success' });
+		} catch (error) {
+			toast.showError(error as Error, locale.baseText('generic.invalidGuide'));
+		} finally {
+			reader.onload = null;
+			inputRef.value = '';
+		}
+	};
+	reader.readAsText(inputRef.files[0]);
+}
 
 const onExecutionsTab = computed(() => {
 	return [
@@ -131,6 +157,12 @@ const workflowMenuItems = computed<Array<ActionDropdownItem<WORKFLOW_MENU_ACTION
 		{
 			id: WORKFLOW_MENU_ACTIONS.IMPORT_FROM_FILE,
 			label: locale.baseText('menuActions.importFromFile'),
+			disabled: onExecutionsTab.value || collaborationReadOnly.value || props.isArchived,
+		},
+		{
+			// LMS: start a build-along lesson from a guide JSON
+			id: WORKFLOW_MENU_ACTIONS.IMPORT_LESSON_GUIDE,
+			label: locale.baseText('menuActions.importLessonGuide'),
 			disabled: onExecutionsTab.value || collaborationReadOnly.value || props.isArchived,
 		},
 	];
@@ -366,6 +398,11 @@ async function onWorkflowMenuSelect(action: WORKFLOW_MENU_ACTIONS): Promise<void
 			nodeViewEventBus.emit('importWorkflowFromFile');
 			break;
 		}
+		case WORKFLOW_MENU_ACTIONS.IMPORT_LESSON_GUIDE: {
+			// LMS: open the guide file picker (see handleGuideFileImport)
+			importGuideFileRef.value?.click();
+			break;
+		}
 		case WORKFLOW_MENU_ACTIONS.PUSH: {
 			try {
 				// Navigate to route with sourceControl param - modal will handle data loading and loading states
@@ -477,6 +514,15 @@ defineExpose({
 			type="file"
 			data-test-id="workflow-import-input"
 			@change="handleFileImport()"
+		/>
+		<!-- LMS: lesson guide picker -->
+		<input
+			ref="importGuideFileRef"
+			:class="$style.hiddenInput"
+			type="file"
+			accept="application/json,.json"
+			data-test-id="workflow-guide-import-input"
+			@change="handleGuideFileImport()"
 		/>
 		<N8nActionDropdown
 			:items="workflowMenuItems"

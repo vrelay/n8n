@@ -3,6 +3,8 @@ export const enum WORKFLOW_MENU_ACTIONS {
 	DOWNLOAD = 'download',
 	IMPORT_FROM_URL = 'import-from-url',
 	IMPORT_FROM_FILE = 'import-from-file',
+	// LMS: import a build-along lesson guide JSON (does not replace the workflow)
+	IMPORT_LESSON_GUIDE = 'import-lesson-guide',
 	PUSH = 'push',
 	EDIT_DESCRIPTION = 'edit-description',
 	SETTINGS = 'settings',

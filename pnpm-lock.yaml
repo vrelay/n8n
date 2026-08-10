@@ -6007,6 +6007,9 @@ importers:
       v-code-diff:
         specifier: ^1.13.1
         version: 1.13.1(patch_hash=21588de80e591bbc1e5a068d9bce311db5254686443652945d2c7887fdafe9d9)(vue@3.5.26(typescript@6.0.2))
+      v-onboarding:
+        specifier: 2.12.4
+        version: 2.12.4(async-validator@4.2.5)(axios@1.18.0(patch_hash=149e256a2a7b632497650b32816716ced972ab02a5ab00fbd8a5158a51722c49))(change-case@5.4.4)(sortablejs@1.14.0)(vue@3.5.26(typescript@6.0.2))
       v3-infinite-loading:
         specifier: ^1.2.2
         version: 1.2.2
@@ -7482,6 +7485,7 @@ packages:
   '@aws-sdk/middleware-websocket@3.936.0':
     resolution: {integrity: sha512-bPe3rqeugyj/MmjP0yBSZox2v1Wa8Dv39KN+RxVbQroLO8VUitBo6xyZ0oZebhZ5sASwSg58aDcMlX0uFLQnTA==}
     engines: {node: '>= 14.0.0'}
+    deprecated: Please update your @aws-sdk client to a more recent version, such as https://github.com/aws/aws-sdk-js-v3/releases/tag/v3.982.0, if using browser-based WebSocket bidirectional streaming.
 
   '@aws-sdk/nested-clients@3.808.0':
     resolution: {integrity: sha512-NparPojwoBul7XPCasy4psFMJbw7Ys4bz8lVB93ljEUD4VV7mM7zwK27Uhz20B8mBFGmFEoAprPsVymJcK9Vcw==}
@@ -10898,6 +10902,9 @@ packages:
   '@pondwader/socks5-server@1.0.10':
     resolution: {integrity: sha512-bQY06wzzR8D2+vVCUoBsr5QS2U6UgPUQRmErNwtsuI6vLcyRKkafjkr3KxbtGFf9aBBIV2mcvlsKD1UYaIV+sg==}
 
+  '@popperjs/core@2.11.8':
+    resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
+
   '@posthog/core@1.28.4':
     resolution: {integrity: sha512-wmtUYHYqA3zIAKDKvYWRNWAQsWOIBwxV08e+bWzVy0wQQzpaS/LzzRupXWRMRrLOk+1x3JKFxbqA3n0QGvpqsQ==}
 
@@ -13545,6 +13552,9 @@ packages:
   '@vueuse/core@10.11.0':
     resolution: {integrity: sha512-x3sD4Mkm7PJ+pcq3HX8PLPBadXCAlSDR/waK87dz0gQE+qJnaaFhc/dZVfJz+IUYzTMVGum2QlR7ImiJQN4s6g==}
 
+  '@vueuse/core@10.11.1':
+    resolution: {integrity: sha512-guoy26JQktXPcz+0n3GukWIy/JDNKti9v6VEMu6kV2sYBsWuGiTU8OWdg+ADfUbHg3/3DlqySDe7JmdHrktiww==}
+
   '@vueuse/core@12.8.2':
     resolution: {integrity: sha512-HbvCmZdzAu3VGi/pWYm5Ut+Kd9mn1ZHnn4L5G8kOQTPs/IwIAmJoBrmYk2ckLArgMXZj0AW3n5CAejLUO+PhdQ==}
 
@@ -13556,8 +13566,52 @@ packages:
   '@vueuse/core@9.13.0':
     resolution: {integrity: sha512-pujnclbeHWxxPRqXWmdkKV5OX4Wk4YeK7wusHqRwU0Q7EFusHoqNA/aPhB6KCh9hEqJkLAJo7bb0Lh9b+OIVzw==}
 
+  '@vueuse/integrations@10.11.1':
+    resolution: {integrity: sha512-Y5hCGBguN+vuVYTZmdd/IMXLOdfS60zAmDmFYc4BKBcMUPZH1n4tdyDECCPjXm0bNT3ZRUy1xzTLGaUje8Xyaw==}
+    peerDependencies:
+      async-validator: ^4
+      axios: 1.18.0
+      change-case: ^4
+      drauu: ^0.3
+      focus-trap: ^7
+      fuse.js: ^6
+      idb-keyval: ^6
+      jwt-decode: ^3
+      nprogress: ^0.2
+      qrcode: ^1.5
+      sortablejs: ^1
+      universal-cookie: ^6
+    peerDependenciesMeta:
+      async-validator:
+        optional: true
+      axios:
+        optional: true
+      change-case:
+        optional: true
+      drauu:
+        optional: true
+      focus-trap:
+        optional: true
+      fuse.js:
+        optional: true
+      idb-keyval:
+        optional: true
+      jwt-decode:
+        optional: true
+      nprogress:
+        optional: true
+      qrcode:
+        optional: true
+      sortablejs:
+        optional: true
+      universal-cookie:
+        optional: true
+
   '@vueuse/metadata@10.11.0':
     resolution: {integrity: sha512-kQX7l6l8dVWNqlqyN3ePW3KmjCQO3ZMgXuBMddIu83CmucrsBfXlH+JoviYyRBws/yLTQO8g3Pbw+bdIoVm4oQ==}
+
+  '@vueuse/metadata@10.11.1':
+    resolution: {integrity: sha512-IGa5FXd003Ug1qAZmyE8wF3sJ81xGLSqTqtQ6jaVfkeZ4i5kS2mwQF61yhVqojRnenVew5PldLyRgvdl4YYuSw==}
 
   '@vueuse/metadata@12.8.2':
     resolution: {integrity: sha512-rAyLGEuoBJ/Il5AmFHiziCPdQzRt88VxR+Y/A/QhJ1EWtWqPBBAxTAFaSkviwEuOEZNtW8pvkPgoCZQ+HxqW1A==}
@@ -13570,6 +13624,9 @@ packages:
 
   '@vueuse/shared@10.11.0':
     resolution: {integrity: sha512-fyNoIXEq3PfX1L3NkNhtVQUSRtqYwJtJg+Bp9rIzculIZWHTkKSysujrOk2J+NrRulLTQH9+3gGSfYLWSEWU1A==}
+
+  '@vueuse/shared@10.11.1':
+    resolution: {integrity: sha512-LHpC8711VFZlDaYUXEBbFBCQ7GS3dVU9mjOhhMhXP6txTV4EhYQg/KGnQuvt/sPAtoUKq7VVUnL6mVtFoL42sA==}
 
   '@vueuse/shared@12.8.2':
     resolution: {integrity: sha512-dznP38YzxZoNloI0qpEfpkms8knDtaoQ6Y/sfS0L7Yki4zh40LFHEhur0odJC6xTHG5dxWVPiUWBXn+wCG2s5w==}
@@ -13593,6 +13650,7 @@ packages:
 
   '@xata.io/client@0.28.4':
     resolution: {integrity: sha512-B02WHIA/ViHya84XvH6JCo13rd5h4S5vVyY2aYi6fIcjDIbCpsSLJ4oGWpdodovRYeAZy9Go4OhdyZwMIRC4BQ==}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
     peerDependencies:
       typescript: '>=4.5'
 
@@ -15028,6 +15086,7 @@ packages:
   cron-parser@4.9.0:
     resolution: {integrity: sha512-p0SaNjrHOnQeR8/VnfGbmg9te2kfyYSQ7Sc/j/6DtPL3JQvKxmjO9TSjNFpujqV3vEYYBvNNvXSxzyksBWAx1Q==}
     engines: {node: '>=12.0.0'}
+    deprecated: v4 is no longer maintained, upgrade to v5
 
   cron-parser@5.6.1:
     resolution: {integrity: sha512-QBm4o1PwZiuY7KFbVvW7FLC8bozy7YWzv+Fz6KRS7sQghzcbDZCGxr/Bc5b6TQreAoSwuWVP491dIcK0THCX6A==}
@@ -15071,6 +15130,7 @@ packages:
 
   crypto-js@4.2.0:
     resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
+    deprecated: Active development of CryptoJS has been discontinued. This library is no longer maintained.
 
   csrf@3.1.0:
     resolution: {integrity: sha512-uTqEnCvWRk042asU6JtapDTcJeeailFy4ydOQS28bj1hcLnYRiqi8SsD2jS412AY1I/4qdOwWZun774iqywf9w==}
@@ -16400,6 +16460,9 @@ packages:
 
   fn.name@1.1.0:
     resolution: {integrity: sha512-GRnmB5gPyJpAhTQdSZTSp9uaPSvl09KoYcMQtsB9rQoOmzs9dH6ffeccH+Z+cv6P68Hu5bC6JjRh4Ah/mHSNRw==}
+
+  focus-trap@7.8.0:
+    resolution: {integrity: sha512-/yNdlIkpWbM0ptxno3ONTuf+2g318kh2ez3KSeZN5dZ8YC6AAmgeWz+GasYYiBJPFaYcSAPeu4GfhUaChzIJXA==}
 
   follow-redirects@1.16.0:
     resolution: {integrity: sha512-y5rN/uOsadFT/JfYwhxRS5R7Qce+g3zG97+JrtFZlC9klX/W5hD7iiLzScI4nZqUS7DNUdhPgw4xI8W2LuXlUw==}
@@ -19911,6 +19974,7 @@ packages:
   prebuild-install@7.1.3:
     resolution: {integrity: sha512-8Mf2cbV7x1cXPUILADGI3wuhfqWvtiLA1iclTDbFRZkgRQS0NqsPZphna9V+HyTEadheuPmjaJMsbzKQFOzLug==}
     engines: {node: '>=10'}
+    deprecated: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.
     hasBin: true
 
   precinct@12.2.0:
@@ -20174,6 +20238,7 @@ packages:
     resolution: {integrity: sha512-gv6vLGcmAOg96/fgo3d9tvA4dJNZL3fMyBqVRrGxQ+Q/o4k9QzbJ3NQF9cOO/71wRodoXhaPgphvMFU68qVAJQ==}
     deprecated: |-
       You or someone you depend on is using Q, the JavaScript Promise library that gave JavaScript developers strong feelings about promises. They can almost certainly migrate to the native JavaScript promise now. Thank you literally everyone for joining me in this bet against the odds. Be excellent to each other.
+
       (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
 
   qrcode.vue@3.3.4:
@@ -21486,6 +21551,9 @@ packages:
   systemjs@6.15.1:
     resolution: {integrity: sha512-Nk8c4lXvMB98MtbmjX7JwJRgJOL8fluecYCfCeYBznwmpOs8Bf15hLM6z4z71EDAhQVrQrI+wt1aLWSXZq+hXA==}
 
+  tabbable@6.5.0:
+    resolution: {integrity: sha512-wieBHXygIm7OyQOu5hQlkk62/WyCFYGlWg7L6/ZCUZwx0o398Zkn4pVmMyfYhfMG8kGrj/Krt8eIk6UKC6VzwA==}
+
   table@6.9.0:
     resolution: {integrity: sha512-9kY+CygyYM6j02t5YFHbNz2FN5QmYGv9zAjVp4lCDjlCw7amdckXlEt/bjMhUIfj4ThGRE4gCUH5+yGnNuPo5A==}
     engines: {node: '>=10.0.0'}
@@ -22267,6 +22335,11 @@ packages:
       '@vue/composition-api':
         optional: true
 
+  v-onboarding@2.12.4:
+    resolution: {integrity: sha512-alfR0YSbE5v37JhrsDgxOxTIuHjBrVnwIWmwqvTtp0p66FSI/E5IEXgEOioelCd6RipwIUyZU4yeHocGzAIz2g==}
+    peerDependencies:
+      vue: ^3.2.21
+
   v3-infinite-loading@1.2.2:
     resolution: {integrity: sha512-MWJc6yChnqeUasBFJ3Enu8IGPcQgRMSTrAEtT1MsHBEx+QjwvNTaY8o+8V9DgVt1MVhQSl3MC55hsaWLJmpRMw==}
 
@@ -22477,8 +22550,8 @@ packages:
   vue-component-type-helpers@2.2.12:
     resolution: {integrity: sha512-YbGqHZ5/eW4SnkPNR44mKVc6ZKQoRs/Rux1sxC6rdwXb4qpbOSYfDr9DsTHolOTGmIKgM9j141mZbBeg05R1pw==}
 
-  vue-component-type-helpers@3.3.8:
-    resolution: {integrity: sha512-troqCMmQodQDqUqn63NQaFi+CDSclSe7sc8VEBFqf5GFLqmGR2Ph3P2WEC7qwpRVyEWsTi/aAr4vyOe/B1hU3g==}
+  vue-component-type-helpers@3.3.9:
+    resolution: {integrity: sha512-3c/UfMe0SqyEfcGTyH7mfshHagJ9QTCbppCb0/uGpHZpFug7+If3GeGZN7I0YheKEExemx3xldQPoO7PQSOLQg==}
 
   vue-demi@0.14.10:
     resolution: {integrity: sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==}
@@ -28198,6 +28271,8 @@ snapshots:
 
   '@pondwader/socks5-server@1.0.10': {}
 
+  '@popperjs/core@2.11.8': {}
+
   '@posthog/core@1.28.4':
     dependencies:
       '@posthog/types': 1.372.10
@@ -29400,7 +29475,7 @@ snapshots:
       storybook: 10.1.11(@testing-library/dom@10.4.0)(bufferutil@4.0.9)(prettier@3.6.2)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(utf-8-validate@5.0.10)
       type-fest: 2.19.0
       vue: 3.5.26(typescript@6.0.2)
-      vue-component-type-helpers: 3.3.8
+      vue-component-type-helpers: 3.3.9
 
   '@stryker-mutator/api@9.6.1':
     dependencies:
@@ -31322,6 +31397,16 @@ snapshots:
       - '@vue/composition-api'
       - vue
 
+  '@vueuse/core@10.11.1(vue@3.5.26(typescript@6.0.2))':
+    dependencies:
+      '@types/web-bluetooth': 0.0.20
+      '@vueuse/metadata': 10.11.1
+      '@vueuse/shared': 10.11.1(vue@3.5.26(typescript@6.0.2))
+      vue-demi: 0.14.10(vue@3.5.26(typescript@6.0.2))
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+      - vue
+
   '@vueuse/core@12.8.2(typescript@6.0.2)':
     dependencies:
       '@types/web-bluetooth': 0.0.21
@@ -31348,7 +31433,24 @@ snapshots:
       - '@vue/composition-api'
       - vue
 
+  '@vueuse/integrations@10.11.1(async-validator@4.2.5)(axios@1.18.0(patch_hash=149e256a2a7b632497650b32816716ced972ab02a5ab00fbd8a5158a51722c49))(change-case@5.4.4)(focus-trap@7.8.0)(sortablejs@1.14.0)(vue@3.5.26(typescript@6.0.2))':
+    dependencies:
+      '@vueuse/core': 10.11.1(vue@3.5.26(typescript@6.0.2))
+      '@vueuse/shared': 10.11.1(vue@3.5.26(typescript@6.0.2))
+      vue-demi: 0.14.10(vue@3.5.26(typescript@6.0.2))
+    optionalDependencies:
+      async-validator: 4.2.5
+      axios: 1.18.0(patch_hash=149e256a2a7b632497650b32816716ced972ab02a5ab00fbd8a5158a51722c49)(debug@4.4.3)
+      change-case: 5.4.4
+      focus-trap: 7.8.0
+      sortablejs: 1.14.0
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+      - vue
+
   '@vueuse/metadata@10.11.0': {}
+
+  '@vueuse/metadata@10.11.1': {}
 
   '@vueuse/metadata@12.8.2': {}
 
@@ -31357,6 +31459,13 @@ snapshots:
   '@vueuse/metadata@9.13.0': {}
 
   '@vueuse/shared@10.11.0(vue@3.5.26(typescript@6.0.2))':
+    dependencies:
+      vue-demi: 0.14.10(vue@3.5.26(typescript@6.0.2))
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+      - vue
+
+  '@vueuse/shared@10.11.1(vue@3.5.26(typescript@6.0.2))':
     dependencies:
       vue-demi: 0.14.10(vue@3.5.26(typescript@6.0.2))
     transitivePeerDependencies:
@@ -34762,6 +34871,10 @@ snapshots:
   flatted@3.4.2: {}
 
   fn.name@1.1.0: {}
+
+  focus-trap@7.8.0:
+    dependencies:
+      tabbable: 6.5.0
 
   follow-redirects@1.16.0(debug@4.3.4):
     optionalDependencies:
@@ -40905,6 +41018,8 @@ snapshots:
 
   systemjs@6.15.1: {}
 
+  tabbable@6.5.0: {}
+
   table@6.9.0:
     dependencies:
       ajv: 8.18.0
@@ -41850,6 +41965,26 @@ snapshots:
       vue: 3.5.26(typescript@6.0.2)
       vue-demi: 0.14.10(vue@3.5.26(typescript@6.0.2))
 
+  v-onboarding@2.12.4(async-validator@4.2.5)(axios@1.18.0(patch_hash=149e256a2a7b632497650b32816716ced972ab02a5ab00fbd8a5158a51722c49))(change-case@5.4.4)(sortablejs@1.14.0)(vue@3.5.26(typescript@6.0.2)):
+    dependencies:
+      '@popperjs/core': 2.11.8
+      '@vueuse/integrations': 10.11.1(async-validator@4.2.5)(axios@1.18.0(patch_hash=149e256a2a7b632497650b32816716ced972ab02a5ab00fbd8a5158a51722c49))(change-case@5.4.4)(focus-trap@7.8.0)(sortablejs@1.14.0)(vue@3.5.26(typescript@6.0.2))
+      focus-trap: 7.8.0
+      vue: 3.5.26(typescript@6.0.2)
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+      - async-validator
+      - axios
+      - change-case
+      - drauu
+      - fuse.js
+      - idb-keyval
+      - jwt-decode
+      - nprogress
+      - qrcode
+      - sortablejs
+      - universal-cookie
+
   v3-infinite-loading@1.2.2: {}
 
   v8-compile-cache-lib@3.0.1: {}
@@ -42048,7 +42183,7 @@ snapshots:
 
   vue-component-type-helpers@2.2.12: {}
 
-  vue-component-type-helpers@3.3.8: {}
+  vue-component-type-helpers@3.3.9: {}
 
   vue-demi@0.14.10(vue@3.5.26(typescript@6.0.2)):
     dependencies:

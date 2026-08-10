@@ -111,6 +111,7 @@
     "typescript": "catalog:",
     "uuid": "catalog:",
     "v-code-diff": "^1.13.1",
+    "v-onboarding": "2.12.4",
     "v3-infinite-loading": "^1.2.2",
     "vue": "catalog:frontend",
     "vue-agile": "^2.0.0",
