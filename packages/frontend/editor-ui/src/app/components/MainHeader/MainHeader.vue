@@ -320,6 +320,8 @@ async function onWorkflowDeactivated() {
 					</div>
 				</div>
 			</div>
+			<!-- LMS: hide Editor/Executions/Evaluations tab bar (single Editor tab is pointless) -->
+			<!--
 			<TabBar
 				v-if="onWorkflowPage"
 				:items="tabBarItems"
@@ -327,6 +329,7 @@ async function onWorkflowDeactivated() {
 				:floating="settingsStore.isCanvasOnly"
 				@update:model-value="onTabSelected"
 			/>
+			-->
 		</div>
 	</div>
 </template>
