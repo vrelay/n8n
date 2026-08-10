@@ -1,6 +1,8 @@
 <script setup lang="ts">
 /* eslint-disable vue/no-multiple-template-root */
-import { computed, defineAsyncComponent, nextTick } from 'vue';
+// LMS: computed unused while focus-panel tooltip is commented out
+import { defineAsyncComponent } from 'vue';
+// import { computed, defineAsyncComponent, nextTick } from 'vue';
 import { getMidCanvasPosition } from '@/app/utils/nodeViewUtils';
 import {
 	DEFAULT_STICKY_HEIGHT,
@@ -11,7 +13,8 @@ import {
 import { useUIStore } from '@/app/stores/ui.store';
 import { useEditorContext } from '@/app/composables/useEditorContext';
 import { useInstanceAiEditorCapability } from '@/app/composables/useInstanceAiEditorCapability';
-import { useFocusPanelStore } from '@/app/stores/focusPanel.store';
+// LMS: focus-panel canvas button commented out
+// import { useFocusPanelStore } from '@/app/stores/focusPanel.store';
 import type {
 	AddedNodesAndConnections,
 	NodeTypeSelectedPayload,
@@ -22,7 +25,8 @@ import KeyboardShortcutTooltip from '@/app/components/KeyboardShortcutTooltip.vu
 import NodeCreatorShortcutCoachmark from '../components/NodeCreatorShortcutCoachmark.vue';
 import { useNodeCreatorShortcutCoachmark } from '../composables/useNodeCreatorShortcutCoachmark';
 import { useI18n } from '@n8n/i18n';
-import { useTelemetry } from '@n8n/composables/useTelemetry';
+// LMS: telemetry only used by commented-out toggleFocusPanel
+// import { useTelemetry } from '@n8n/composables/useTelemetry';
 import { useAssistantStore } from '@/features/ai/assistant/assistant.store';
 import { useChatPanelStore } from '@/features/ai/assistant/chatPanel.store';
 
@@ -33,12 +37,14 @@ import {
 	N8nIconButton,
 	N8nTooltip,
 } from '@n8n/design-system';
-import { useSetupPanelStore } from '@/features/setupPanel/setupPanel.store';
+// LMS: setup panel tooltip only for commented-out focus-panel button
+// import { useSetupPanelStore } from '@/features/setupPanel/setupPanel.store';
 import { useWorkflowId } from '@/app/composables/useWorkflowId';
 
 type Props = {
 	nodeViewScale: number;
 	createNodeActive?: boolean;
+	// LMS: still accepted from parent; button that used it is commented out
 	focusPanelActive: boolean;
 };
 
@@ -58,10 +64,11 @@ const emit = defineEmits<{
 }>();
 
 const uiStore = useUIStore();
-const focusPanelStore = useFocusPanelStore();
-const setupPanelStore = useSetupPanelStore();
+// LMS: focus / setup / telemetry unused while canvas focus-panel button is hidden
+// const focusPanelStore = useFocusPanelStore();
+// const setupPanelStore = useSetupPanelStore();
 const i18n = useI18n();
-const telemetry = useTelemetry();
+// const telemetry = useTelemetry();
 const assistantStore = useAssistantStore();
 const chatPanelStore = useChatPanelStore();
 const workflowId = useWorkflowId();
@@ -69,12 +76,13 @@ const workflowId = useWorkflowId();
 const { getAddedNodesAndConnections } = useActions();
 const { shouldShowCoachmark, onDismissCoachmark } = useNodeCreatorShortcutCoachmark();
 
-const sidePanelTooltip = computed(() => {
-	if (setupPanelStore.isFeatureEnabled) {
-		return i18n.baseText('nodeView.openSidePanel');
-	}
-	return i18n.baseText('nodeView.openFocusPanel');
-});
+// LMS: focus-panel button tooltip unused
+// const sidePanelTooltip = computed(() => {
+// 	if (setupPanelStore.isFeatureEnabled) {
+// 		return i18n.baseText('nodeView.openSidePanel');
+// 	}
+// 	return i18n.baseText('nodeView.openFocusPanel');
+// });
 
 function openNodeCreator() {
 	emit('toggleNodeCreator', {
@@ -109,17 +117,18 @@ function nodeTypeSelected(value: NodeTypeSelectedPayload[]) {
 	closeNodeCreator(true);
 }
 
-function toggleFocusPanel() {
-	focusPanelStore.toggleFocusPanel();
-
-	telemetry.track(
-		focusPanelStore.focusPanelActive ? 'User opened focus panel' : 'User closed focus panel',
-		{
-			source: 'canvasButton',
-			parameters: focusPanelStore.focusedNodeParametersInTelemetryFormat,
-		},
-	);
-}
+// LMS: focus-panel canvas button removed
+// function toggleFocusPanel() {
+// 	focusPanelStore.toggleFocusPanel();
+//
+// 	telemetry.track(
+// 		focusPanelStore.focusPanelActive ? 'User opened focus panel' : 'User closed focus panel',
+// 		{
+// 			source: 'canvasButton',
+// 			parameters: focusPanelStore.focusedNodeParametersInTelemetryFormat,
+// 		},
+// 	);
+// }
 
 const { aiAssistant, aiBuilder, instanceAi } = useEditorContext();
 const instanceAiCapability = useInstanceAiEditorCapability();
@@ -148,20 +157,21 @@ async function onAskAssistantButtonClick() {
 	}
 }
 
-function openCommandBar(event: MouseEvent) {
-	event.stopPropagation();
-
-	void nextTick(() => {
-		const keyboardEvent = new KeyboardEvent('keydown', {
-			key: 'k',
-			code: 'KeyK',
-			metaKey: true,
-			bubbles: true,
-			cancelable: true,
-		});
-		document.dispatchEvent(keyboardEvent);
-	});
-}
+// LMS: command-bar (search) canvas button removed — openCommandBar unused
+// function openCommandBar(event: MouseEvent) {
+// 	event.stopPropagation();
+//
+// 	void nextTick(() => {
+// 		const keyboardEvent = new KeyboardEvent('keydown', {
+// 			key: 'k',
+// 			code: 'KeyK',
+// 			metaKey: true,
+// 			bubbles: true,
+// 			cancelable: true,
+// 		});
+// 		document.dispatchEvent(keyboardEvent);
+// 	});
+// }
 </script>
 
 <template>
@@ -182,6 +192,8 @@ function openCommandBar(event: MouseEvent) {
 				/>
 			</KeyboardShortcutTooltip>
 		</NodeCreatorShortcutCoachmark>
+		<!-- LMS: hide Command bar (search) — Cmd+K; students use + to add nodes -->
+		<!--
 		<KeyboardShortcutTooltip
 			:label="i18n.baseText('nodeView.openCommandBar')"
 			:shortcut="{ keys: ['k'], metaKey: true }"
@@ -196,6 +208,7 @@ function openCommandBar(event: MouseEvent) {
 				@click="openCommandBar"
 			/>
 		</KeyboardShortcutTooltip>
+		-->
 		<KeyboardShortcutTooltip
 			:label="i18n.baseText('nodeView.addStickyHint')"
 			:shortcut="{ keys: ['s'], shiftKey: true }"
@@ -210,6 +223,8 @@ function openCommandBar(event: MouseEvent) {
 				@click="addStickyNote"
 			/>
 		</KeyboardShortcutTooltip>
+		<!-- LMS: hide focus / side panel — advanced; students open nodes on canvas -->
+		<!--
 		<KeyboardShortcutTooltip
 			:label="sidePanelTooltip"
 			:shortcut="{ keys: ['f'], shiftKey: true }"
@@ -225,6 +240,7 @@ function openCommandBar(event: MouseEvent) {
 				@click="toggleFocusPanel"
 			/>
 		</KeyboardShortcutTooltip>
+		-->
 		<!-- Instance AI hand-off (mimics the assistant button) — shown when the
 		Instance AI feature is on and the host provides the workflow action.
 		Clicking hands the current workflow off to a new Instance AI thread. -->

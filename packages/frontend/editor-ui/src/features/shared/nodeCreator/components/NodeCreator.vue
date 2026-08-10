@@ -12,7 +12,7 @@ import NodesListPanel from './Panel/NodesListPanel.vue';
 import { useCredentialsStore } from '@/features/credentials/credentials.store';
 import { useBannersStore } from '@/features/shared/banners/banners.store';
 import { useUIStore } from '@/app/stores/ui.store';
-import { DRAG_EVENT_DATA_KEY } from '@/app/constants';
+import { DRAG_EVENT_DATA_KEY, LMS_ALLOWED_NODE_TYPES } from '@/app/constants';
 import { useChatPanelStore } from '@/features/ai/assistant/chatPanel.store';
 import { useSettingsStore } from '@/app/stores/settings.store';
 import { useAiGateway } from '@/app/composables/useAiGateway';
@@ -25,6 +25,9 @@ const OUTSIDE_CLICK_WHITELIST = [
 	// different modals
 	'.el-overlay-dialog',
 ];
+
+// LMS: canvas "+" / search only offer this allowlist
+const LMS_ALLOWED_NODE_TYPE_SET = new Set(LMS_ALLOWED_NODE_TYPES);
 
 export interface Props {
 	active?: boolean;
@@ -151,7 +154,8 @@ watch(
 		const { actions, mergedNodes } = generateMergedNodesAndActions(nodeTypes, httpOnlyCredentials);
 
 		setActions(actions);
-		setMergeNodes(mergedNodes);
+		// LMS: hide non-allowlisted nodes from search + AI connection pickers
+		setMergeNodes(mergedNodes.filter((node) => LMS_ALLOWED_NODE_TYPE_SET.has(node.name)));
 	},
 	{ immediate: true },
 );

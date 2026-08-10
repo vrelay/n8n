@@ -1,7 +1,28 @@
 import type { NodeCreatorOpenSource } from '@/Interface';
-import { DATA_TABLE_NODE_TYPE, DATA_TABLE_TOOL_NODE_TYPE } from './nodeTypes';
+import {
+	AGENT_NODE_TYPE,
+	CHAT_TRIGGER_NODE_TYPE,
+	DATA_TABLE_NODE_TYPE,
+	DATA_TABLE_TOOL_NODE_TYPE,
+	HTTP_REQUEST_NODE_TYPE,
+	HTTP_REQUEST_TOOL_NODE_TYPE,
+	IF_NODE_TYPE,
+	MANUAL_TRIGGER_NODE_TYPE,
+	MERGE_NODE_TYPE,
+	NO_OP_NODE_TYPE,
+	SCHEDULE_TRIGGER_NODE_TYPE,
+	SET_NODE_TYPE,
+	SIMPLE_MEMORY_NODE_TYPE,
+	SWITCH_NODE_TYPE,
+	WAIT_NODE_TYPE,
+} from './nodeTypes';
 
 export const TEMPLATE_CATEGORY_AI = 'categories/ai';
+
+// LMS: OpenRouter LLM + agent tools (exist in @n8n/nodes-langchain)
+export const OPENROUTER_CHAT_MODEL_NODE_TYPE = '@n8n/n8n-nodes-langchain.lmChatOpenRouter';
+export const CALCULATOR_TOOL_NODE_TYPE = '@n8n/n8n-nodes-langchain.toolCalculator';
+export const THINK_TOOL_NODE_TYPE = '@n8n/n8n-nodes-langchain.toolThink';
 
 export const NODE_CREATOR_OPEN_SOURCES: Record<
 	Uppercase<NodeCreatorOpenSource>,
@@ -59,6 +80,30 @@ export const AI_CODE_TOOL_LANGCHAIN_NODE_TYPE = '@n8n/n8n-nodes-langchain.toolCo
 export const AI_WORKFLOW_TOOL_LANGCHAIN_NODE_TYPE = '@n8n/n8n-nodes-langchain.toolWorkflow';
 export const AI_SECTION_RECOMMENDED_TOOLS = 'Recommended Tools';
 export const REQUEST_NODE_FORM_URL = 'https://n8n-community.typeform.com/to/K1fBVTZ3';
+
+/**
+ * LMS: nodes shown in the canvas "+" panel (flat list).
+ * Only types that exist in this fork — missing ones are skipped at render time.
+ */
+export const LMS_ALLOWED_NODE_TYPES: string[] = [
+	AGENT_NODE_TYPE,
+	AI_CODE_TOOL_LANGCHAIN_NODE_TYPE,
+	CALCULATOR_TOOL_NODE_TYPE,
+	CHAT_TRIGGER_NODE_TYPE,
+	HTTP_REQUEST_NODE_TYPE,
+	HTTP_REQUEST_TOOL_NODE_TYPE,
+	IF_NODE_TYPE,
+	MANUAL_TRIGGER_NODE_TYPE,
+	MERGE_NODE_TYPE,
+	NO_OP_NODE_TYPE,
+	// LMS: OpenRouter Chat Model omitted — use HTTP Request + $env.OPENROUTER_API_KEY instead
+	SCHEDULE_TRIGGER_NODE_TYPE,
+	SET_NODE_TYPE,
+	SIMPLE_MEMORY_NODE_TYPE,
+	SWITCH_NODE_TYPE,
+	THINK_TOOL_NODE_TYPE,
+	WAIT_NODE_TYPE,
+];
 
 export const RECOMMENDED_NODES: string[] = [DATA_TABLE_NODE_TYPE, DATA_TABLE_TOOL_NODE_TYPE];
 export const BETA_NODES: string[] = ['@n8n/n8n-nodes-langchain.microsoftAgent365Trigger'];

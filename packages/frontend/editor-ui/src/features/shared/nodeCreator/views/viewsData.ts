@@ -1,5 +1,4 @@
 import {
-	AGGREGATE_NODE_TYPE,
 	AI_CATEGORY_AGENTS,
 	AI_CATEGORY_CHAINS,
 	AI_CATEGORY_DOCUMENT_LOADERS,
@@ -15,51 +14,15 @@ import {
 	AI_NODE_CREATOR_VIEW,
 	AI_OTHERS_NODE_CREATOR_VIEW,
 	AI_SUBCATEGORY,
-	AI_TRANSFORM_NODE_TYPE,
 	AI_UNCATEGORIZED_CATEGORY,
 	AI_WORKFLOW_TOOL_LANGCHAIN_NODE_TYPE,
-	CHAT_TRIGGER_NODE_TYPE,
-	CODE_NODE_TYPE,
-	COMPRESSION_NODE_TYPE,
-	CONVERT_TO_FILE_NODE_TYPE,
 	CORE_NODES_CATEGORY,
-	CRYPTO_NODE_TYPE,
-	DATA_TABLE_NODE_TYPE,
-	DATETIME_NODE_TYPE,
-	DEFAULT_SUBCATEGORY,
-	EDIT_IMAGE_NODE_TYPE,
-	EMAIL_IMAP_NODE_TYPE,
-	EMAIL_SEND_NODE_TYPE,
-	EXECUTE_WORKFLOW_TRIGGER_NODE_TYPE,
-	EXTRACT_FROM_FILE_NODE_TYPE,
-	FILTER_NODE_TYPE,
-	FLOWS_CONTROL_SUBCATEGORY,
-	FORM_TRIGGER_NODE_TYPE,
-	HELPERS_SUBCATEGORY,
-	HITL_SUBCATEGORY,
-	HTML_NODE_TYPE,
-	HTTP_REQUEST_NODE_TYPE,
 	HUMAN_IN_THE_LOOP_CATEGORY,
-	IF_NODE_TYPE,
-	LIMIT_NODE_TYPE,
-	MANUAL_TRIGGER_NODE_TYPE,
-	MARKDOWN_NODE_TYPE,
-	MERGE_NODE_TYPE,
+	LMS_ALLOWED_NODE_TYPES,
 	MESSAGE_AN_AGENT_NODE_TYPE,
-	OTHER_TRIGGER_NODES_SUBCATEGORY,
 	REGULAR_NODE_CREATOR_VIEW,
-	REMOVE_DUPLICATES_NODE_TYPE,
-	RSS_READ_NODE_TYPE,
-	SCHEDULE_TRIGGER_NODE_TYPE,
-	SET_NODE_TYPE,
-	SPLIT_IN_BATCHES_NODE_TYPE,
-	SPLIT_OUT_NODE_TYPE,
-	SUMMARIZE_NODE_TYPE,
 	TEMPLATE_CATEGORY_AI,
-	TRANSFORM_DATA_SUBCATEGORY,
 	TRIGGER_NODE_CREATOR_VIEW,
-	WEBHOOK_NODE_TYPE,
-	XML_NODE_TYPE,
 } from '@/app/constants';
 import { useNodeTypesStore } from '@/app/stores/nodeTypes.store';
 import { useSettingsStore } from '@/app/stores/settings.store';
@@ -71,8 +34,10 @@ import type { BaseTextKey } from '@n8n/i18n';
 import { useI18n } from '@n8n/i18n';
 import camelCase from 'lodash/camelCase';
 import type { INodeTypeDescription, NodeConnectionType, Themed } from 'n8n-workflow';
-import { EVALUATION_TRIGGER_NODE_TYPE, isHitlToolType, NodeConnectionTypes } from 'n8n-workflow';
-import { getAiTemplatesCallout, getSendAndWaitNodes } from '../nodeCreator.utils';
+import { isHitlToolType, NodeConnectionTypes } from 'n8n-workflow';
+import { getAiTemplatesCallout } from '../nodeCreator.utils';
+// LMS: stock Trigger/Regular views removed — getSendAndWaitNodes unused here now
+// import { getAiTemplatesCallout, getSendAndWaitNodes } from '../nodeCreator.utils';
 
 export interface NodeViewItemSection {
 	key: string;
@@ -134,6 +99,15 @@ function getNodeView(node: INodeTypeDescription | SimplifiedNodeType) {
 			iconUrl: node.iconUrl,
 		},
 	};
+}
+
+/** LMS: flat alphabetical allowlist — skips types not present / hidden in this install */
+function getLmsFlatNodeItems(): NodeViewItem[] {
+	const nodeTypesStore = useNodeTypesStore();
+	return LMS_ALLOWED_NODE_TYPES.map((name) => nodeTypesStore.getNodeType(name))
+		.filter((node): node is INodeTypeDescription => !!node && !node.hidden)
+		.map(getNodeView)
+		.sort((a, b) => (a.properties.displayName ?? '').localeCompare(b.properties.displayName ?? ''));
 }
 
 function getAiNodesBySubcategory(nodes: INodeTypeDescription[], subcategory: string) {
@@ -375,284 +349,25 @@ export function AINodesView(_nodes: SimplifiedNodeType[]): NodeView {
 
 export function TriggerView() {
 	const i18n = useI18n();
-	const evaluationStore = useEvaluationStore();
-	const isEvaluationEnabled = evaluationStore.isEvaluationEnabled;
 
-	const evaluationTriggerNode = isEvaluationEnabled
-		? {
-				key: EVALUATION_TRIGGER_NODE_TYPE,
-				type: 'node',
-				category: [CORE_NODES_CATEGORY],
-				properties: {
-					group: [],
-					name: EVALUATION_TRIGGER_NODE_TYPE,
-					displayName: 'When running evaluation',
-					description: 'Run a dataset through your workflow to test performance',
-					icon: 'fa:check-double',
-					defaults: {
-						name: 'Evaluation',
-						color: '#c3c9d5',
-					},
-				},
-			}
-		: null;
-
-	const view: NodeView = {
+	// LMS: flat student allowlist (A–Z). Stock trigger helper panel: restore from git.
+	return {
 		value: TRIGGER_NODE_CREATOR_VIEW,
 		title: i18n.baseText('nodeCreator.triggerHelperPanel.selectATrigger'),
 		subtitle: i18n.baseText('nodeCreator.triggerHelperPanel.selectATriggerDescription'),
-		items: [
-			{
-				key: MANUAL_TRIGGER_NODE_TYPE,
-				type: 'node',
-				category: [CORE_NODES_CATEGORY],
-				properties: {
-					group: [],
-					name: MANUAL_TRIGGER_NODE_TYPE,
-					displayName: i18n.baseText('nodeCreator.triggerHelperPanel.manualTriggerDisplayName'),
-					description: i18n.baseText('nodeCreator.triggerHelperPanel.manualTriggerDescription'),
-					icon: 'fa:mouse-pointer',
-				},
-			},
-			{
-				key: DEFAULT_SUBCATEGORY,
-				type: 'subcategory',
-				properties: {
-					forceIncludeNodes: [WEBHOOK_NODE_TYPE, EMAIL_IMAP_NODE_TYPE],
-					title: 'App Trigger Nodes',
-					icon: 'satellite-dish',
-				},
-			},
-			{
-				key: SCHEDULE_TRIGGER_NODE_TYPE,
-				type: 'node',
-				category: [CORE_NODES_CATEGORY],
-				properties: {
-					group: [],
-					name: SCHEDULE_TRIGGER_NODE_TYPE,
-					displayName: i18n.baseText('nodeCreator.triggerHelperPanel.scheduleTriggerDisplayName'),
-					description: i18n.baseText('nodeCreator.triggerHelperPanel.scheduleTriggerDescription'),
-					icon: 'fa:clock',
-				},
-			},
-			{
-				key: WEBHOOK_NODE_TYPE,
-				type: 'node',
-				category: [CORE_NODES_CATEGORY],
-				properties: {
-					group: [],
-					name: WEBHOOK_NODE_TYPE,
-					displayName: i18n.baseText('nodeCreator.triggerHelperPanel.webhookTriggerDisplayName'),
-					description: i18n.baseText('nodeCreator.triggerHelperPanel.webhookTriggerDescription'),
-					icon: 'node:webhook',
-				},
-			},
-			{
-				key: FORM_TRIGGER_NODE_TYPE,
-				type: 'node',
-				category: [CORE_NODES_CATEGORY],
-				properties: {
-					group: [],
-					name: FORM_TRIGGER_NODE_TYPE,
-					displayName: i18n.baseText('nodeCreator.triggerHelperPanel.formTriggerDisplayName'),
-					description: i18n.baseText('nodeCreator.triggerHelperPanel.formTriggerDescription'),
-					icon: 'node:form-trigger',
-				},
-			},
-			{
-				key: EXECUTE_WORKFLOW_TRIGGER_NODE_TYPE,
-				type: 'node',
-				category: [CORE_NODES_CATEGORY],
-				properties: {
-					group: [],
-					name: EXECUTE_WORKFLOW_TRIGGER_NODE_TYPE,
-					displayName: i18n.baseText('nodeCreator.triggerHelperPanel.workflowTriggerDisplayName'),
-					description: i18n.baseText('nodeCreator.triggerHelperPanel.workflowTriggerDescription'),
-					icon: 'fa:sign-out-alt',
-				},
-			},
-			{
-				key: CHAT_TRIGGER_NODE_TYPE,
-				type: 'node',
-				category: [CORE_NODES_CATEGORY],
-				properties: {
-					group: [],
-					name: CHAT_TRIGGER_NODE_TYPE,
-					displayName: i18n.baseText('nodeCreator.triggerHelperPanel.chatTriggerDisplayName'),
-					description: i18n.baseText('nodeCreator.triggerHelperPanel.chatTriggerDescription'),
-					icon: 'fa:comments',
-				},
-			},
-			...(evaluationTriggerNode ? [evaluationTriggerNode] : []),
-			{
-				type: 'subcategory',
-				key: OTHER_TRIGGER_NODES_SUBCATEGORY,
-				category: CORE_NODES_CATEGORY,
-				properties: {
-					title: OTHER_TRIGGER_NODES_SUBCATEGORY,
-					icon: 'folder-open',
-				},
-			},
-		],
+		items: getLmsFlatNodeItems(),
 	};
-
-	return view;
 }
 
-export function RegularView(nodes: SimplifiedNodeType[]) {
+export function RegularView(_nodes: SimplifiedNodeType[]) {
 	const i18n = useI18n();
 
-	const popularItemsSubcategory = [
-		SET_NODE_TYPE,
-		CODE_NODE_TYPE,
-		DATA_TABLE_NODE_TYPE,
-		DATETIME_NODE_TYPE,
-		AI_TRANSFORM_NODE_TYPE,
-	];
-
-	const view: NodeView = {
+	// LMS: same flat allowlist — no App / AI / HITL nesting. Stock RegularView: restore from git.
+	return {
 		value: REGULAR_NODE_CREATOR_VIEW,
 		title: i18n.baseText('nodeCreator.triggerHelperPanel.whatHappensNext'),
-		items: [
-			{
-				key: DEFAULT_SUBCATEGORY,
-				type: 'subcategory',
-				properties: {
-					title: 'App Regular Nodes',
-					icon: 'globe',
-					forceIncludeNodes: [RSS_READ_NODE_TYPE, EMAIL_SEND_NODE_TYPE],
-				},
-			},
-			{
-				type: 'subcategory',
-				key: TRANSFORM_DATA_SUBCATEGORY,
-				category: CORE_NODES_CATEGORY,
-				properties: {
-					title: TRANSFORM_DATA_SUBCATEGORY,
-					icon: 'pen',
-					sections: [
-						{
-							key: 'popular',
-							title: i18n.baseText('nodeCreator.sectionNames.popular'),
-							items: popularItemsSubcategory,
-						},
-						{
-							key: 'addOrRemove',
-							title: i18n.baseText('nodeCreator.sectionNames.transform.addOrRemove'),
-							items: [
-								FILTER_NODE_TYPE,
-								REMOVE_DUPLICATES_NODE_TYPE,
-								SPLIT_OUT_NODE_TYPE,
-								LIMIT_NODE_TYPE,
-							],
-						},
-						{
-							key: 'combine',
-							title: i18n.baseText('nodeCreator.sectionNames.transform.combine'),
-							items: [SUMMARIZE_NODE_TYPE, AGGREGATE_NODE_TYPE, MERGE_NODE_TYPE],
-						},
-						{
-							key: 'convert',
-							title: i18n.baseText('nodeCreator.sectionNames.transform.convert'),
-							items: [
-								HTML_NODE_TYPE,
-								MARKDOWN_NODE_TYPE,
-								XML_NODE_TYPE,
-								CRYPTO_NODE_TYPE,
-								EXTRACT_FROM_FILE_NODE_TYPE,
-								CONVERT_TO_FILE_NODE_TYPE,
-								COMPRESSION_NODE_TYPE,
-								EDIT_IMAGE_NODE_TYPE,
-							],
-						},
-					],
-				},
-			},
-			{
-				type: 'subcategory',
-				key: FLOWS_CONTROL_SUBCATEGORY,
-				category: CORE_NODES_CATEGORY,
-				properties: {
-					title: FLOWS_CONTROL_SUBCATEGORY,
-					icon: 'git-branch',
-					sections: [
-						{
-							key: 'popular',
-							title: i18n.baseText('nodeCreator.sectionNames.popular'),
-							items: [FILTER_NODE_TYPE, IF_NODE_TYPE, SPLIT_IN_BATCHES_NODE_TYPE, MERGE_NODE_TYPE],
-						},
-					],
-				},
-			},
-			{
-				type: 'subcategory',
-				key: HELPERS_SUBCATEGORY,
-				category: CORE_NODES_CATEGORY,
-				properties: {
-					title: HELPERS_SUBCATEGORY,
-					icon: 'toolbox',
-					sections: [
-						{
-							key: 'popular',
-							title: i18n.baseText('nodeCreator.sectionNames.popular'),
-							items: [
-								HTTP_REQUEST_NODE_TYPE,
-								WEBHOOK_NODE_TYPE,
-								CODE_NODE_TYPE,
-								DATA_TABLE_NODE_TYPE,
-							],
-						},
-					],
-				},
-			},
-			// To add node to this subcategory:
-			// - add "HITL" to the "categories" property of the node's codex
-			// - add "HITL": ["Human in the Loop"] to the "subcategories" property of the node's codex
-			// node has to have the "sendAndWait" operation, if a new operation needs to be included here:
-			// - update getHumanInTheLoopActions in packages/frontend/editor-ui/src/components/Node/NodeCreator/Modes/NodesMode.vue
-			{
-				type: 'subcategory',
-				key: HITL_SUBCATEGORY,
-				category: HUMAN_IN_THE_LOOP_CATEGORY,
-				properties: {
-					title: HITL_SUBCATEGORY,
-					icon: 'badge-check',
-					sections: [
-						{
-							key: 'sendAndWait',
-							title: i18n.baseText('nodeCreator.sectionNames.sendAndWait'),
-							items: getSendAndWaitNodes(nodes),
-						},
-					],
-				},
-			},
-		],
+		items: getLmsFlatNodeItems(),
 	};
-
-	const hasAINodes = (nodes ?? []).some((node) => node.codex?.categories?.includes(AI_SUBCATEGORY));
-	if (hasAINodes)
-		view.items.unshift({
-			key: AI_NODE_CREATOR_VIEW,
-			type: 'view',
-			properties: {
-				title: i18n.baseText('nodeCreator.aiPanel.langchainAiNodes'),
-				icon: 'robot',
-				description: i18n.baseText('nodeCreator.aiPanel.nodesForAi'),
-				borderless: true,
-			},
-		} as NodeViewItem);
-
-	view.items.push({
-		key: TRIGGER_NODE_CREATOR_VIEW,
-		type: 'view',
-		properties: {
-			title: i18n.baseText('nodeCreator.triggerHelperPanel.addAnotherTrigger'),
-			icon: 'bolt-filled',
-			description: i18n.baseText('nodeCreator.triggerHelperPanel.addAnotherTriggerDescription'),
-		},
-	});
-
-	return view;
 }
 
 export function HitlToolView(nodes: SimplifiedNodeType[]): NodeView {
