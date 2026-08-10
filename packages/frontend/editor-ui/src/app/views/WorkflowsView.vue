@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import Draggable from '@/app/components/Draggable.vue';
 import EmptySharedSectionActionBox from '@/features/core/folders/components/EmptySharedSectionActionBox.vue';
-import FolderBreadcrumbs from '@/features/core/folders/components/FolderBreadcrumbs.vue';
+// LMS: unused while overview chrome is commented out in template
+// import FolderBreadcrumbs from '@/features/core/folders/components/FolderBreadcrumbs.vue';
 import FolderCard from '@/features/core/folders/components/FolderCard.vue';
 import {
 	FOLDER_LIST_ITEM_ACTIONS,
@@ -10,7 +11,8 @@ import {
 import ResourcesListEmptyState from '@/app/components/layouts/ResourcesListEmptyState.vue';
 import ResourcesListLoadingState from '@/app/components/layouts/ResourcesListLoadingState.vue';
 import ResourcesListLayout from '@/app/components/layouts/ResourcesListLayout.vue';
-import ProjectHeader from '@/features/collaboration/projects/components/ProjectHeader.vue';
+// LMS: ProjectHeader (tabs / overview / insights) hidden on workflows page
+// import ProjectHeader from '@/features/collaboration/projects/components/ProjectHeader.vue';
 import WorkflowCard from '@/app/components/WorkflowCard.vue';
 import WorkflowTagsDropdown from '@/features/shared/tags/components/WorkflowTagsDropdown.vue';
 import { useAutoScrollOnDrag } from '@/app/composables/useAutoScrollOnDrag';
@@ -39,19 +41,20 @@ import {
 } from '@/app/constants';
 import { COMMUNITY_PLUS_ENROLLMENT_MODAL } from '@/features/settings/usage/usage.constants';
 import { useAITemplatesStarterCollectionStore } from '@/experiments/aiTemplatesStarterCollection/stores/aiTemplatesStarterCollection.store';
-import SuggestedWorkflowCard from '@/experiments/personalizedTemplates/components/SuggestedWorkflowCard.vue';
-import SuggestedWorkflows from '@/experiments/personalizedTemplates/components/SuggestedWorkflows.vue';
+// LMS: callouts / template recs commented out in template
+// import SuggestedWorkflowCard from '@/experiments/personalizedTemplates/components/SuggestedWorkflowCard.vue';
+// import SuggestedWorkflows from '@/experiments/personalizedTemplates/components/SuggestedWorkflows.vue';
 import { usePersonalizedTemplatesStore } from '@/experiments/personalizedTemplates/stores/personalizedTemplates.store';
 import { useReadyToRunWorkflowsStore } from '@/experiments/readyToRunWorkflows/stores/readyToRunWorkflows.store';
-import TemplateRecommendationV2 from '@/experiments/templateRecoV2/components/TemplateRecommendationV2.vue';
-import TemplateRecommendationV3 from '@/experiments/personalizedTemplatesV3/components/TemplateRecommendationV3.vue';
+// import TemplateRecommendationV2 from '@/experiments/templateRecoV2/components/TemplateRecommendationV2.vue';
+// import TemplateRecommendationV3 from '@/experiments/personalizedTemplatesV3/components/TemplateRecommendationV3.vue';
 import { usePersonalizedTemplatesV2Store } from '@/experiments/templateRecoV2/stores/templateRecoV2.store';
 import { usePersonalizedTemplatesV3Store } from '@/experiments/personalizedTemplatesV3/stores/personalizedTemplatesV3.store';
 import { useTrialIntroModalStore } from '@/experiments/trialIntroModal/stores/trialIntroModal.store';
-import EmptyStateLayout from '@/app/components/layouts/EmptyStateLayout.vue';
+// import EmptyStateLayout from '@/app/components/layouts/EmptyStateLayout.vue';
 import { useReadyToRunStore } from '@/features/workflows/readyToRun/stores/readyToRun.store';
 import { useEmptyStateDetection } from '@/features/workflows/readyToRun/composables/useEmptyStateDetection';
-import InsightsSummary from '@/features/execution/insights/components/InsightsSummary.vue';
+// import InsightsSummary from '@/features/execution/insights/components/InsightsSummary.vue';
 import { useInsightsStore } from '@/features/execution/insights/insights.store';
 import { useWorkflowsEmptyState } from '@/features/workflows/composables/useWorkflowsEmptyState';
 import type {
@@ -99,20 +102,21 @@ import { type LocationQueryRaw, useRoute, useRouter } from 'vue-router';
 
 import {
 	N8nEmptyState,
-	N8nButton,
-	N8nCallout,
+	// LMS: unused while header/callouts commented out
+	// N8nButton,
+	// N8nCallout,
 	N8nCard,
 	N8nCheckbox,
-	N8nIcon,
+	// N8nIcon,
 	N8nInfoTip,
-	N8nInlineTextEdit,
+	// N8nInlineTextEdit,
 	N8nInputLabel,
 	N8nLink,
-	N8nLoading,
+	// N8nLoading,
 	N8nOption,
 	N8nSelect,
 	N8nText,
-	N8nTooltip,
+	// N8nTooltip,
 } from '@n8n/design-system';
 
 const SEARCH_DEBOUNCE_TIME = getDebounceTime(DEBOUNCE_TIME.INPUT.SEARCH);
@@ -2188,7 +2192,8 @@ const onNameSubmit = async (name: string) => {
 		v-else-if="deferChromeForOnboarding"
 		data-test-id="workflows-onboarding-loading"
 	/>
-	<EmptyStateLayout v-else-if="shouldUseSimplifiedLayout" @click:add="addWorkflow" />
+	<!-- LMS: skip onboarding empty layout — always show workflows list as full page -->
+	<!-- <EmptyStateLayout v-else-if="shouldUseSimplifiedLayout" @click:add="addWorkflow" /> -->
 
 	<ResourcesListLayout
 		v-else
@@ -2213,6 +2218,8 @@ const onNameSubmit = async (name: string) => {
 		@update:pagination-and-sort="setPaginationAndSort"
 		@mouseleave="folderHelpers.resetDropTarget"
 	>
+		<!-- LMS: hide Overview header / ProjectTabs (Credentials, Executions, …) / Insights -->
+		<!--
 		<template #header>
 			<ProjectHeader
 				:has-active-callouts="hasActiveCallouts"
@@ -2226,6 +2233,9 @@ const onNameSubmit = async (name: string) => {
 				/>
 			</ProjectHeader>
 		</template>
+		-->
+		<!-- LMS: hide folder add CTA on overview -->
+		<!--
 		<template v-if="showRegisteredCommunityCTA" #add-button>
 			<N8nTooltip placement="top">
 				<template #content>
@@ -2250,6 +2260,9 @@ const onNameSubmit = async (name: string) => {
 				/>
 			</N8nTooltip>
 		</template>
+		-->
+		<!-- LMS: hide AI starter / suggested / ready-to-run callouts -->
+		<!--
 		<template #callout>
 			<N8nCallout
 				v-if="showAIStarterCollectionCallout"
@@ -2317,6 +2330,9 @@ const onNameSubmit = async (name: string) => {
 				</template>
 			</N8nCallout>
 		</template>
+		-->
+		<!-- LMS: breadcrumbs unused on /home/workflows overview -->
+		<!--
 		<template #breadcrumbs>
 			<div v-if="breadcrumbsLoading" :class="$style['breadcrumbs-loading']">
 				<N8nLoading :loading="breadcrumbsLoading" :rows="1" variant="p" />
@@ -2353,6 +2369,7 @@ const onNameSubmit = async (name: string) => {
 				</FolderBreadcrumbs>
 			</div>
 		</template>
+		-->
 		<template #item="{ item: data, index }">
 			<Draggable
 				v-if="(data as FolderResource | WorkflowResource).resourceType === 'folder'"
@@ -2464,8 +2481,11 @@ const onNameSubmit = async (name: string) => {
 					"
 					@click:button="addWorkflow"
 				/>
+				<!-- LMS: hide template recommendation carousels under empty list -->
+				<!--
 				<TemplateRecommendationV3 v-if="showTemplateRecommendationV3" />
 				<TemplateRecommendationV2 v-else-if="showTemplateRecommendationV2" />
+				-->
 			</div>
 		</template>
 		<template #filters="{ setKeyValue }">
