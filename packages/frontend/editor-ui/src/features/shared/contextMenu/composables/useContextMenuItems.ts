@@ -74,6 +74,17 @@ export function isFocusHandoffAction(action: ContextMenuAction): boolean {
 
 type Item = ActionDropdownItem<ContextMenuAction>;
 
+// LMS: node ⋯ menu for students — keep Open / Rename / Replace / Copy / Duplicate
+// (+ sticky color). Execute / Deactivate / Delete stay on the node toolbar only.
+const LMS_NODE_CONTEXT_MENU_ACTIONS = new Set<ContextMenuAction>([
+	'open',
+	'rename',
+	'replace',
+	'copy',
+	'duplicate',
+	'change_color',
+]);
+
 export function useContextMenuItems(
 	targetNodeIds: ComputedRef<string[]>,
 	targetGroupId?: ComputedRef<string | undefined>,
@@ -558,7 +569,10 @@ export function useContextMenuItems(
 				menuActions.unshift(...singleNodeActions);
 			}
 
-			return menuActions;
+			// LMS: drop toolbar duplicates + advanced items (pin, tidy, extract, group, select…)
+			return menuActions
+				.filter((item) => LMS_NODE_CONTEXT_MENU_ACTIONS.has(item.id))
+				.map((item, index) => (index === 0 ? { ...item, divided: false } : item));
 		}
 	});
 }
