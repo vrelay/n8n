@@ -30,15 +30,12 @@ const { start, finish, goToStep } = useVOnboarding(wrapper);
 
 const stepCount = computed(() => guide.value?.steps.length ?? 0);
 
-// LMS: students must keep interacting with the canvas (click +, drag connections) while
-// guided — v-onboarding's default preventOverlayInteraction sets body pointer-events:none
-// and only frees the highlighted element, which dead-ends the lesson. Keep the dim
-// overlay purely visual instead.
+// LMS: no dim overlay — students click + and use the node picker sidebar, NDV, etc.
+// while guided; dimming those panels makes the lesson unusable. Also disable
+// preventOverlayInteraction (v-onboarding default) so pointer-events stay on the page.
 const wrapperOptions = {
 	overlay: {
-		enabled: true,
-		padding: 8,
-		borderRadius: 8,
+		enabled: false,
 		preventOverlayInteraction: false,
 	},
 	scrollToStep: { enabled: false },
