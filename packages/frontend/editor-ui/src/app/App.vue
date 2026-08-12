@@ -12,7 +12,7 @@ import { useTelemetryContext } from '@/app/composables/useTelemetryContext';
 import { useTelemetryInitializer } from '@/app/composables/useTelemetryInitializer';
 import { useWorkflowDiffRouting } from '@/app/composables/useWorkflowDiffRouting';
 import { useTrialIntroModalAutoOpen } from '@/experiments/trialIntroModal/useTrialIntroModalAutoOpen';
-import { CODEMIRROR_TOOLTIP_CONTAINER_ELEMENT_ID, HIRING_BANNER, VIEWS } from '@/app/constants';
+import { CODEMIRROR_TOOLTIP_CONTAINER_ELEMENT_ID, HIRING_BANNER, LMS_GUIDE_ROOT_ELEMENT_ID, VIEWS } from '@/app/constants';
 import { useNDVStore } from '@/features/ndv/shared/ndv.store';
 import { useSettingsStore } from '@/app/stores/settings.store';
 import LoadingView from '@/app/views/LoadingView.vue';
@@ -124,22 +124,26 @@ useExposeCssVar('--ask-assistant--floating-button--margin-bottom', askAiFloating
 
 <template>
 	<LoadingView v-if="loading" />
-	<BaseLayout v-else id="n8n-app" :class="$style.app">
-		<template #banners>
-			<AppBanners />
-		</template>
-		<AppLayout @mounted="setLayoutRef">
-			<RouterView />
-		</AppLayout>
-		<AppModals />
-		<AppCommandBar />
-		<template #overlays>
-			<div :id="CODEMIRROR_TOOLTIP_CONTAINER_ELEMENT_ID" />
-		</template>
-		<template #aside>
-			<AppChatPanel v-if="layoutRef" :layout-ref="layoutRef" />
-		</template>
-	</BaseLayout>
+	<template v-else>
+		<BaseLayout id="n8n-app" :class="$style.app">
+			<template #banners>
+				<AppBanners />
+			</template>
+			<AppLayout @mounted="setLayoutRef">
+				<RouterView />
+			</AppLayout>
+			<AppModals />
+			<AppCommandBar />
+			<template #overlays>
+				<div :id="CODEMIRROR_TOOLTIP_CONTAINER_ELEMENT_ID" />
+			</template>
+			<template #aside>
+				<AppChatPanel v-if="layoutRef" :layout-ref="layoutRef" />
+			</template>
+		</BaseLayout>
+		<!-- LMS: outside overflow:hidden app shell — always above NDV dim layer -->
+		<div :id="LMS_GUIDE_ROOT_ELEMENT_ID" :class="$style.lmsGuideRoot" />
+	</template>
 </template>
 
 <style lang="scss" module>
@@ -148,5 +152,13 @@ useExposeCssVar('--ask-assistant--floating-button--margin-bottom', askAiFloating
 .app {
 	height: 100vh;
 	overflow: hidden;
+}
+
+// LMS: pass clicks through except on the guide panel child
+.lmsGuideRoot {
+	position: fixed;
+	inset: 0;
+	z-index: var(--lms-guide-panel--z);
+	pointer-events: none;
 }
 </style>

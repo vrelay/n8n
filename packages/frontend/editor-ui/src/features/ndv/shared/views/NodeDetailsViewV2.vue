@@ -25,6 +25,9 @@ import { useMessage } from '@/app/composables/useMessage';
 import { useNodeHelpers } from '@/app/composables/useNodeHelpers';
 import { usePinnedData } from '@/app/composables/usePinnedData';
 import { useStyles } from '@n8n/composables/useStyles';
+import { LMS_GUIDE_PANEL_WIDTH } from '@/app/constants';
+import { useLmsGuideStore } from '@/features/lms/guide/lmsGuide.store';
+import { isLmsGuidePanelEventTarget } from '@/features/lms/guide/lmsGuideInteraction';
 import { useInjectWorkflowId } from '@/app/composables/useInjectWorkflowId';
 import { useTelemetry } from '@n8n/composables/useTelemetry';
 import {
@@ -97,6 +100,7 @@ const telemetryContext = useTelemetryContext({ view_shown: 'ndv' });
 const i18n = useI18n();
 const message = useMessage();
 const { APP_Z_INDEXES } = useStyles();
+const lmsGuideStore = useLmsGuideStore();
 
 const settingsEventBus = createEventBus();
 const runInputIndex = ref(-1);
@@ -149,6 +153,20 @@ const onLmsTabChange = (tab: LmsNdvTab) => {
 		activateOutputPane();
 	}
 };
+
+// LMS: NDV stays full-size; guide floats above. Backdrop skips the left guide strip.
+const lmsNdvBackdropStyle = computed(() => {
+	const style: Record<string, string | number> = { zIndex: APP_Z_INDEXES.NDV };
+	if (lmsGuideStore.active) {
+		style.left = LMS_GUIDE_PANEL_WIDTH;
+	}
+	return style;
+});
+
+function onNdvBackdropClick(event: MouseEvent) {
+	if (isLmsGuidePanelEventTarget(event.target)) return;
+	void close();
+}
 
 const workflowRunning = computed(() => uiStore.isActionActive.workflowRunning);
 
@@ -751,8 +769,8 @@ onBeforeUnmount(() => {
 		<div
 			data-test-id="ndv-backdrop"
 			:class="$style.backdrop"
-			:style="{ zIndex: APP_Z_INDEXES.NDV }"
-			@click="close"
+			:style="lmsNdvBackdropStyle"
+			@click="onNdvBackdropClick"
 		></div>
 
 		<dialog

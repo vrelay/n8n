@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-// LMS: build-along panel — fixed on the left; runner gates Next on canvas state
+// LMS: build-along panel — top-layer root; never dimmed or dismissed by NDV / node picker
 import { computed, inject, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useStyles } from '@n8n/composables/useStyles';
 import { N8nButton, N8nText } from '@n8n/design-system';
+import { LMS_GUIDE_PANEL_WIDTH, LMS_GUIDE_ROOT_ELEMENT_ID } from '@/app/constants';
 import { useLmsGuideStore } from './lmsGuide.store';
 import { useLmsGuideRunner } from './useLmsGuideRunner';
 import { WorkflowDocumentStoreKey } from '@/app/constants/injectionKeys';
@@ -35,6 +36,11 @@ const showWaitHint = computed(() => {
 	return !currentStepComplete.value;
 });
 
+const panelStyle = computed(() => ({
+	zIndex: APP_Z_INDEXES.LMS_GUIDE_PANEL,
+	width: `min(${LMS_GUIDE_PANEL_WIDTH}, 90vw)`,
+}));
+
 watch([currentStepComplete, stepIndex, active], () => {
 	if (!active.value) return;
 	maybeAutoAdvance();
@@ -59,45 +65,48 @@ function onExit() {
 </script>
 
 <template>
-	<aside
-		v-if="active && currentStep"
-		:class="$style.panel"
-		:style="{ zIndex: APP_Z_INDEXES.LMS_GUIDE_PANEL }"
-		data-test-id="lms-guide-panel"
-		@mousedown.stop
-	>
-		<N8nText tag="h3" :bold="true" :class="$style.title">{{ currentStep.title }}</N8nText>
-		<N8nText v-if="currentStep.body" tag="p" :class="$style.body">
-			{{ currentStep.body }}
-		</N8nText>
-		<ol v-if="currentStep.actions?.length" :class="$style.actionList">
-			<li v-for="(action, actionIndex) in currentStep.actions" :key="actionIndex">
-				<N8nText tag="span">{{ action }}</N8nText>
-			</li>
-		</ol>
-		<N8nText v-if="showWaitHint" tag="p" size="small" color="text-light" :class="$style.hint">
-			Do the steps above first — Next unlocks when you are done.
-		</N8nText>
-		<div :class="$style.footer">
-			<N8nText size="small" color="text-light">{{ stepIndex + 1 }} / {{ stepCount }}</N8nText>
-			<div :class="$style.buttons">
-				<N8nButton type="tertiary" size="small" label="Exit" @click="onExit" />
-				<N8nButton
-					v-if="!isFirstStep"
-					type="secondary"
-					size="small"
-					label="Back"
-					@click="onPrevious"
-				/>
-				<N8nButton
-					size="small"
-					:label="isLastStep ? 'Finish' : 'Next'"
-					:disabled="!currentStepComplete"
-					@click="onNext"
-				/>
+	<Teleport :to="`#${LMS_GUIDE_ROOT_ELEMENT_ID}`">
+		<aside
+			v-if="active && currentStep"
+			:class="$style.panel"
+			:style="panelStyle"
+			data-test-id="lms-guide-panel"
+			@mousedown.stop
+			@click.stop
+		>
+			<N8nText tag="h3" :bold="true" :class="$style.title">{{ currentStep.title }}</N8nText>
+			<N8nText v-if="currentStep.body" tag="p" :class="$style.body">
+				{{ currentStep.body }}
+			</N8nText>
+			<ol v-if="currentStep.actions?.length" :class="$style.actionList">
+				<li v-for="(action, actionIndex) in currentStep.actions" :key="actionIndex">
+					<N8nText tag="span">{{ action }}</N8nText>
+				</li>
+			</ol>
+			<N8nText v-if="showWaitHint" tag="p" size="small" color="text-light" :class="$style.hint">
+				Do the steps above first — Next unlocks when you are done.
+			</N8nText>
+			<div :class="$style.footer">
+				<N8nText size="small" color="text-light">{{ stepIndex + 1 }} / {{ stepCount }}</N8nText>
+				<div :class="$style.buttons">
+					<N8nButton type="tertiary" size="small" label="Exit" @click="onExit" />
+					<N8nButton
+						v-if="!isFirstStep"
+						type="secondary"
+						size="small"
+						label="Back"
+						@click="onPrevious"
+					/>
+					<N8nButton
+						size="small"
+						:label="isLastStep ? 'Finish' : 'Next'"
+						:disabled="!currentStepComplete"
+						@click="onNext"
+					/>
+				</div>
 			</div>
-		</div>
-	</aside>
+		</aside>
+	</Teleport>
 </template>
 
 <style lang="scss" module>
@@ -108,16 +117,17 @@ function onExit() {
 	display: flex;
 	flex-direction: column;
 	gap: var(--spacing--2xs);
-	width: min(360px, 90vw);
 	max-height: calc(100vh - var(--spacing--lg) * 2);
 	padding: var(--spacing--sm);
 	overflow-y: auto;
-	background: var(--color--background--light-3);
+	// LMS: fully opaque — must not pick up NDV dim overlay underneath
+	background-color: var(--color--background--light-3);
 	border: var(--border);
 	border-left: none;
 	border-radius: 0 var(--radius) var(--radius) 0;
 	box-shadow: var(--shadow);
 	transform: translateY(-50%);
+	pointer-events: auto;
 }
 
 .title {
