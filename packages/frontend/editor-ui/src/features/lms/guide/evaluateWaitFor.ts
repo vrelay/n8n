@@ -26,11 +26,18 @@ export function evaluateLmsGuideWaitFor(
 	if (!waitFor || waitFor.kind === 'manual') return true;
 
 	switch (waitFor.kind) {
-		case 'nodeAdded':
-			return nodes.some((node) => node.type === waitFor.type);
+		case 'nodeAdded': {
+			const matching = nodes.filter((node) => node.type === waitFor.type);
+			const needed = waitFor.count ?? 1;
+			return matching.length >= needed;
+		}
 		case 'nodesConnected': {
-			const from = nodes.find((node) => node.type === waitFor.fromType);
-			const to = nodes.find((node) => node.type === waitFor.toType);
+			const from = nodes.find((node) =>
+				waitFor.fromName ? node.name === waitFor.fromName : node.type === waitFor.fromType,
+			);
+			const to = nodes.find((node) =>
+				waitFor.toName ? node.name === waitFor.toName : node.type === waitFor.toType,
+			);
 			if (!from || !to) return false;
 			const outgoing = connectionsBySource[from.name]?.main ?? [];
 			return outgoing.some((group) =>
@@ -38,7 +45,9 @@ export function evaluateLmsGuideWaitFor(
 			);
 		}
 		case 'nodeHasParam': {
-			const node = nodes.find((candidate) => candidate.type === waitFor.type);
+			const node = nodes.find((candidate) =>
+				waitFor.name ? candidate.name === waitFor.name : candidate.type === waitFor.type,
+			);
 			if (!node) return false;
 			const value = getByPath(node.parameters, waitFor.path);
 			if ('equals' in waitFor) return value === waitFor.equals;
