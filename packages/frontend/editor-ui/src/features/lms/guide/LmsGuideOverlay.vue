@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 // LMS: build-along panel — top-layer root; never dimmed or dismissed by NDV / node picker
-import { computed, inject, watch } from 'vue';
+import { computed, inject, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useStyles } from '@n8n/composables/useStyles';
 import { N8nButton, N8nText } from '@n8n/design-system';
 import { LMS_GUIDE_PANEL_WIDTH, LMS_GUIDE_ROOT_ELEMENT_ID } from '@/app/constants';
 import { useLmsGuideStore } from './lmsGuide.store';
 import { useLmsGuideRunner } from './useLmsGuideRunner';
+import { useLmsGuidePanelDrag } from './useLmsGuidePanelDrag';
 import { WorkflowDocumentStoreKey } from '@/app/constants/injectionKeys';
 
 const { APP_Z_INDEXES } = useStyles();
@@ -36,9 +37,15 @@ const showWaitHint = computed(() => {
 	return !currentStepComplete.value;
 });
 
+const panelRef = ref<HTMLElement | null>(null);
+const dragHandleRef = ref<HTMLElement | null>(null);
+
+const { panelPositionStyle, isDragging } = useLmsGuidePanelDrag(panelRef, dragHandleRef, active);
+
 const panelStyle = computed(() => ({
 	zIndex: APP_Z_INDEXES.LMS_GUIDE_PANEL,
 	width: `min(${LMS_GUIDE_PANEL_WIDTH}, 90vw)`,
+	...panelPositionStyle.value,
 }));
 
 watch([currentStepComplete, stepIndex, active], () => {
@@ -68,13 +75,20 @@ function onExit() {
 	<Teleport :to="`#${LMS_GUIDE_ROOT_ELEMENT_ID}`">
 		<aside
 			v-if="active && currentStep"
-			:class="$style.panel"
+			ref="panelRef"
+			:class="[$style.panel, { [$style.panelDragging]: isDragging }]"
 			:style="panelStyle"
 			data-test-id="lms-guide-panel"
 			@mousedown.stop
 			@click.stop
 		>
-			<N8nText tag="h3" :bold="true" :class="$style.title">{{ currentStep.title }}</N8nText>
+			<div
+				ref="dragHandleRef"
+				:class="$style.dragHandle"
+				data-test-id="lms-guide-panel-drag-handle"
+			>
+				<N8nText tag="h3" :bold="true" :class="$style.title">{{ currentStep.title }}</N8nText>
+			</div>
 			<N8nText v-if="currentStep.body" tag="p" :class="$style.body">
 				{{ currentStep.body }}
 			</N8nText>
@@ -112,8 +126,6 @@ function onExit() {
 <style lang="scss" module>
 .panel {
 	position: fixed;
-	top: 50%;
-	left: 0;
 	display: flex;
 	flex-direction: column;
 	gap: var(--spacing--2xs);
@@ -123,15 +135,32 @@ function onExit() {
 	// LMS: fully opaque — must not pick up NDV dim overlay underneath
 	background-color: var(--color--background--light-3);
 	border: var(--border);
-	border-left: none;
-	border-radius: 0 var(--radius) var(--radius) 0;
+	border-radius: var(--radius);
 	box-shadow: var(--shadow);
-	transform: translateY(-50%);
 	pointer-events: auto;
+}
+
+.panelDragging {
+	user-select: none;
+}
+
+.dragHandle {
+	display: flex;
+	align-items: center;
+	margin: calc(-1 * var(--spacing--3xs)) calc(-1 * var(--spacing--3xs)) 0;
+	padding: var(--spacing--3xs);
+	border-radius: var(--radius) var(--radius) 0 0;
+	cursor: grab;
+	touch-action: none;
+
+	&:active {
+		cursor: grabbing;
+	}
 }
 
 .title {
 	margin: 0;
+	flex: 1;
 }
 
 .body {
