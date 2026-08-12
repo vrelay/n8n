@@ -17,8 +17,9 @@ import AppHeader from '@/app/components/app/AppHeader.vue';
 // import AppSidebar from '@/app/components/app/AppSidebar.vue';
 import LogsPanel from '@/features/execution/logs/components/LogsPanel.vue';
 import LoadingView from '@/app/views/LoadingView.vue';
-// LMS: build-along lesson guide overlay; started via ⋯ → Import lesson guide
+// LMS: build-along lesson guide overlay; started via ⋯ → Import lesson guide or ?lesson= deep-link
 import LmsGuideOverlay from '@/features/lms/guide/LmsGuideOverlay.vue';
+import { useLmsLessonDeepLink } from '@/features/lms/guide/useLmsLessonDeepLink';
 // LMS: only needed when sidebar / overlays use isCanvasOnly
 // import { useSettingsStore } from '@/app/stores/settings.store';
 
@@ -44,6 +45,9 @@ const {
 const { setup: setupPostMessages, cleanup: cleanupPostMessages } = usePostMessageHandler({
 	currentWorkflowDocumentStore,
 });
+
+// LMS: auto-start bundled lesson on /workflow/new?lesson=<id>
+useLmsLessonDeepLink({ isLoading, currentWorkflowDocumentStore });
 
 // As the standalone editor host, this layout defines what the editor's
 // Instance AI entry points do here: hand the current workflow off to a new

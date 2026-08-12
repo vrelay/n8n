@@ -41,8 +41,7 @@ import { ResourceType } from '@/features/collaboration/projects/projects.utils';
 import { useMoveResourceToProjectToast } from '@/features/collaboration/projects/composables/useMoveResourceToProjectToast';
 import { injectWorkflowDocumentStore } from '@/app/stores/workflowDocument.store';
 // LMS: lesson guide import
-import { useLmsGuideStore } from '@/features/lms/guide/lmsGuide.store';
-import { parseLmsGuide } from '@/features/lms/guide/parseGuide';
+import { startLmsGuideFromJsonString } from '@/features/lms/guide/startLmsGuide';
 
 const props = defineProps<{
 	workflowPermissions: PermissionsRecord['workflow'];
@@ -75,7 +74,6 @@ const { showMoveToProjectToast } = useMoveResourceToProjectToast();
 const workflowTelemetry = useTelemetry();
 const favoritesStore = useFavoritesStore();
 const workflowDocumentStore = injectWorkflowDocumentStore();
-const lmsGuideStore = useLmsGuideStore();
 
 // LMS: parse a lesson guide JSON and start the build-along tour; never replaces the workflow
 function handleGuideFileImport() {
@@ -85,10 +83,9 @@ function handleGuideFileImport() {
 	const reader = new FileReader();
 	reader.onload = () => {
 		try {
-			lmsGuideStore.start(parseLmsGuide(reader.result as string));
-			toast.showMessage({ title: locale.baseText('generic.guideStarted'), type: 'success' });
-		} catch (error) {
-			toast.showError(error as Error, locale.baseText('generic.invalidGuide'));
+			startLmsGuideFromJsonString(reader.result as string);
+		} catch {
+			// startLmsGuideFromJsonString already toasts
 		} finally {
 			reader.onload = null;
 			inputRef.value = '';
