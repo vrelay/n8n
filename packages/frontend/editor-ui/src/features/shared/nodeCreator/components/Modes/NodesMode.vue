@@ -25,10 +25,12 @@ import { useNodeCreatorStore } from '@/features/shared/nodeCreator/nodeCreator.s
 import { TriggerView, RegularView, AIView, AINodesView } from '../../views/viewsData';
 import {
 	flattenCreateElements,
-	filterAndSearchNodes,
+	// LMS: filterAndSearchNodes unused while moreFromCommunity is disabled
+	// filterAndSearchNodes,
 	prepareCommunityNodeDetailsViewStack,
 	transformNodeType,
-	getRootSearchCallouts,
+	// LMS: getRootSearchCallouts unused while globalCallouts is disabled
+	// getRootSearchCallouts,
 	shouldShowCommunityNodeDetails,
 	getHumanInTheLoopActions,
 } from '../../nodeCreator.utils';
@@ -58,10 +60,10 @@ const emit = defineEmits<{
 
 const i18n = useI18n();
 
-const { isRagStarterCalloutVisible, openSampleWorkflowTemplate } = useCalloutHelpers();
+const { openSampleWorkflowTemplate } = useCalloutHelpers();
 
 const { mergedNodes, actions, onSubcategorySelected } = useNodeCreatorStore();
-const { pushViewStack, popViewStack, isAiSubcategoryView, isHitlSubcategoryView } = useViewStacks();
+const { pushViewStack, popViewStack } = useViewStacks();
 const { setAddedNodeActionParameters, nodeCreateElementToNodeTypeSelectedPayload } = useActions();
 
 const { registerKeyHook } = useKeyboardNavigation();
@@ -73,7 +75,10 @@ const workflowDocumentStore = injectWorkflowDocumentStore();
 
 const communityNodesAndActions = computed(() => useNodeTypesStore().communityNodesAndActions);
 
+// LMS: hide community nodes from search — students only use the flat allowlist
 const moreFromCommunity = computed(() => {
+	return [];
+	/*
 	return filterAndSearchNodes(
 		communityNodesAndActions.value.mergedNodes,
 		activeViewStack.value.search ?? '',
@@ -83,6 +88,7 @@ const moreFromCommunity = computed(() => {
 			aiConnectionType: activeViewStack.value.connectionType,
 		},
 	);
+	*/
 });
 
 const isSearchResultEmpty = computed(() => {
@@ -303,6 +309,9 @@ function baseSubcategoriesFilter(item: INodeCreateElement): boolean {
 	return hasActions || !hasTriggerGroup;
 }
 
+// LMS: no HITL / RAG search callouts — flat allowlist only
+const globalCallouts = computed<INodeCreateElement[]>(() => []);
+/*
 const globalCallouts = computed<INodeCreateElement[]>(() => [
 	...getRootSearchCallouts(
 		activeViewStack.value.search ?? '',
@@ -310,6 +319,7 @@ const globalCallouts = computed<INodeCreateElement[]>(() => [
 		mergedNodes,
 	),
 ]);
+*/
 
 function arrowLeft() {
 	popViewStack();

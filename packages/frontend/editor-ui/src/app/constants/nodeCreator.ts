@@ -1,4 +1,4 @@
-import type { NodeCreatorOpenSource } from '@/Interface';
+import type { INodeCreateElement, NodeCreatorOpenSource } from '@/Interface';
 import {
 	AGENT_NODE_TYPE,
 	CHAT_TRIGGER_NODE_TYPE,
@@ -104,6 +104,20 @@ export const LMS_ALLOWED_NODE_TYPES: string[] = [
 	THINK_TOOL_NODE_TYPE,
 	WAIT_NODE_TYPE,
 ];
+
+export const LMS_ALLOWED_NODE_TYPE_SET = new Set(LMS_ALLOWED_NODE_TYPES);
+
+/** LMS: restrict node-creator lists/search to the student allowlist */
+export function filterToLmsAllowedNodeTypes<T extends { name: string }>(nodes: T[]): T[] {
+	return nodes.filter((node) => LMS_ALLOWED_NODE_TYPE_SET.has(node.name));
+}
+
+/** LMS: restrict rendered search hits to the student allowlist */
+export function filterLmsAllowedCreateElements(items: INodeCreateElement[]): INodeCreateElement[] {
+	return items.filter(
+		(item) => item.type === 'node' && LMS_ALLOWED_NODE_TYPE_SET.has(item.key),
+	);
+}
 
 export const RECOMMENDED_NODES: string[] = [DATA_TABLE_NODE_TYPE, DATA_TABLE_TOOL_NODE_TYPE];
 export const BETA_NODES: string[] = ['@n8n/n8n-nodes-langchain.microsoftAgent365Trigger'];

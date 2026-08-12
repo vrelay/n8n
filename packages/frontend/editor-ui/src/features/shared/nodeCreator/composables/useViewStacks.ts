@@ -23,6 +23,7 @@ import {
 	HUMAN_IN_THE_LOOP_CATEGORY,
 	NEW_TOOL_CATEGORIES,
 	TRIGGER_NODE_CREATOR_VIEW,
+	filterLmsAllowedCreateElements,
 } from '@/app/constants';
 import { defineStore } from 'pinia';
 import { v4 as uuid } from 'uuid';
@@ -144,6 +145,9 @@ export const useViewStacks = defineStore('nodeCreatorViewStacks', () => {
 				searchBase = filterOutAiNodes(searchBase);
 			}
 
+			// LMS: search only within the student allowlist (blocks community / other-category leaks)
+			searchBase = filterLmsAllowedCreateElements(searchBase);
+
 			const searchResults = finalizeItems(
 				searchNodes(stack.search || '', searchBase, {
 					popularity: nodePopularityMap,
@@ -213,6 +217,9 @@ export const useViewStacks = defineStore('nodeCreatorViewStacks', () => {
 
 	// Generate a delta between the global search results(all nodes) and the stack search results
 	const globalSearchItemsDiff = computed<INodeCreateElement[]>(() => {
+		// LMS: flat allowlist only — no "Results in other categories" section while searching
+		return [];
+		/*
 		const stack = getLastActiveStack();
 		if (!stack?.search || isAiSubcategoryView(stack) || isHitlSubcategoryView(stack)) return [];
 
@@ -257,6 +264,7 @@ export const useViewStacks = defineStore('nodeCreatorViewStacks', () => {
 		});
 
 		return filteredSections;
+		*/
 	});
 
 	const itemsBySubcategory = computed(() => subcategorizeItems(nodeCreatorStore.mergedNodes));
